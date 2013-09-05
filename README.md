@@ -2,6 +2,44 @@
 
 Modinha is a model abstraction similar to an ORM or ODM, that aims to separate data modeling and persistence.
 
+## Installation and Usage
+
+Install as a package dependency:
+
+    $ npm install modinha
+
+Create a model:
+
+    var Model = require('modinha');
+
+    var User = Model.extend(null, {
+      schema: {
+        id:         { type: 'any' },
+        first:      { type: 'string' },
+        last:       { type: 'string' },
+        username:   { type: 'string' },
+        email:      { type: 'string', required: true, format: 'email' },
+        created:    { type: 'any' },
+        modified:   { type: 'any' }      
+      }
+    });
+
+    // create a new user
+    User.create({ email: 'valid@example.com' }, function (err, user) {
+      console.log(user);
+    });
+
+    // find a user
+    User.find({ ATTR: VALUE }, function (err, user) {
+      console.log(user);
+    });
+
+
+## Persistence
+
+Modinha uses an in-memory backend by default. This works like a mock backend for testing and simplifies initial stages of development. Adapters for a few different data stores are planned, including Redis, Riak, and MongoDB.
+
+
 ## The MIT License
 
 Copyright (c) 2013 Christian Smith http://anvil.io
