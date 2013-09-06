@@ -12,8 +12,16 @@ var cwd = process.cwd()
   ;
 
 
+/**
+ * Should style assertions
+ */
+
 chai.should();
 
+
+/**
+ * Spec
+ */
 
 describe('Model-extending constructor', function () {
 
@@ -97,6 +105,27 @@ describe('Model-extending constructor', function () {
 
     it('should reference the correct prototype', function () {
       Type.superclass.should.equal(Model.prototype);
+    });
+
+  });
+
+
+  describe('schema', function () {
+
+    before(function () {
+      Type = Model.extend(null, { schema: {} });
+    });
+
+    it('should have _id by default', function () {
+      Type.schema._id.type.should.equal('any');
+    });
+
+    it('should have "created" timestamp by default', function () {
+      Type.schema.created.type.should.equal('any');
+    });
+
+    it('should have "modified" timestamp by default', function () {
+      Type.schema.modified.type.should.equal('any');
     });
 
   });
@@ -287,6 +316,7 @@ describe('Model-extending constructor', function () {
       it('should not provide an instance', function () {
         expect(instance).equals(undefined);
       });
+
     });
 
     describe('with a duplicate values on unique attributes', function () {
@@ -331,5 +361,71 @@ describe('Model-extending constructor', function () {
 
   });
 
+
+  describe('instance updates', function () {
+
+    before(function () {
+      Type = Model.extend(null, {
+        schema: {
+          email: { type: 'string', format: 'email' }
+        }
+      });
+    });
+
+    describe('with valid data', function () {
+
+      before(function (done) {
+        Type.backend.reset();
+        Type.create({ email: 'initial@email.com' }, function (e, type) {
+          Type.update({ _id: type._id }, { email: 'updated@email.com' }, function (error, _instance) {
+            err = error;
+            instance = _instance;
+            done();
+          });
+        }); 
+      });
+
+      it('should provide a null error', function () {
+        expect(err).equals(null);
+      });
+
+      it('should provide an updated instance', function () {
+        instance.email.should.equal('updated@email.com');
+      });
+
+      it('should store the updated instance', function () {
+        Type.backend.documents[0].email.should.equal('updated@email.com');
+      });
+
+      it('should update the timestamp', function () {
+        instance.modified.should.not.equal(instance.created);
+      });
+
+    });
+
+    describe('with invalid data', function () {
+
+      before(function (done) {
+        Type.backend.reset();
+        Type.create({ email: 'initial@email.com' }, function (e, type) {
+          Type.update({ _id: type._id}, { email: 'not-valid' }, function (error, _instance) {
+            err = error;
+            instance = _instance;
+            done();
+          });
+        }); 
+      });
+
+      it('should provide a validation error', function () {
+        err.name.should.equal('ValidationError');
+      });
+
+      it('should not provide an instance', function () {
+        expect(instance).equals(undefined);
+      });
+
+    });
+
+  });
 
 });
