@@ -428,4 +428,33 @@ describe('Model-extending constructor', function () {
 
   });
 
+
+  describe('instance destruction', function () {
+
+    describe('with existing instance', function () {
+
+      before(function (done) {
+        Type.backend.reset();
+        Type.create({ email: 'initial@email.com' }, function (e, type) {
+          Type.backend.documents.length.should.equal(1);
+
+          Type.destroy({ _id: type._id}, function (error) {
+            err = error;
+            done();
+          });
+        }); 
+      });
+
+      it('should provide a null error', function () {
+        expect(err).equals(null);
+      });
+
+      it('should delete the stored instance', function () {
+        Type.backend.documents.length.should.equal(0);
+      });
+
+    });
+
+  });
+
 });
