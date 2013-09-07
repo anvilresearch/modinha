@@ -260,8 +260,12 @@ describe('Model-extending constructor', function () {
       Type = Model.extend(null, {
         schema: {
           email: { type: 'string', format: 'email' },
-          uniq:  { type: 'string', unique: true }
+          random: { type: 'string' }
         }
+      });
+
+      Type.before('create', function () {
+        this.random = 'zxcv';
       });
     });
 
@@ -321,6 +325,23 @@ describe('Model-extending constructor', function () {
 
     describe('with a duplicate values on unique attributes', function () {
       it('should provide a "duplicate value" error');
+    });
+
+    describe('with before create hook', function () {
+
+      before(function (done) {
+        Type.backend.reset();
+        Type.create({ email: 'valid@email.com' }, function (error, _instance) {
+          err = error;
+          instance = _instance;
+          done();
+        });         
+      });
+
+      it('should invoke the callback', function () {
+        instance.random.should.equal('zxcv');
+      });
+
     });
 
   });
