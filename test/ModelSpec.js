@@ -162,7 +162,8 @@ describe('Model-extending constructor', function () {
               d: { type: 'boolean', default: true }
             }
           },
-          z: { type: 'boolean', default: true }
+          z: { type: 'boolean', default: true },
+          f: { type: 'string', default: function () { return 'generated'; } }
         }
       });
     });
@@ -216,6 +217,11 @@ describe('Model-extending constructor', function () {
       instance = new Type();
       instance.z.should.equal(true);
       instance.y.d.should.equal(true);
+    });
+
+    it('should generate defaults defined in the schema by function', function () {
+      instance = new Type();
+      instance.f.should.equal('generated');
     });
 
   });
