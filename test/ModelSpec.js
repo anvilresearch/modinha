@@ -227,6 +227,31 @@ describe('Model-extending constructor', function () {
   });
 
 
+  describe('default', function () {
+
+    before(function () {
+      Type = Model.extend(null, {
+        schema: {
+          random: { type: 'string', default: Type.defaults.random }
+        }
+      });
+    });
+
+    describe('random string generator', function () {
+
+      before(function () {
+        instance = new Type();
+      });
+
+      it('should set a random string', function () {
+        instance.random.should.be.defined;
+      });
+
+    });
+
+  });
+
+
   describe('instance validation', function () {
 
     before(function () {

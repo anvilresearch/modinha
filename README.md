@@ -53,6 +53,14 @@ Schema properties can have default values, which can be a literal value or a fun
       }
     });
 
+Modinha defines a property for common default functions. At the moment there's a random string generator. More to come...
+
+    var M = Modinha.extend(null, {
+      schema: {
+        secret: { type: 'string', default: Modinha.defaults.random }
+      }
+    });
+
 
 #### CRUD
 
