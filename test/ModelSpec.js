@@ -226,9 +226,15 @@ describe('Model-extending constructor', function () {
     before(function () {
       Type = Model.extend(null, {
         schema: {
-          email: { type: 'string', format: 'email' }
+          email:  { type: 'string', format: 'email' },
+          random: { type: 'string' }
         }
       });
+
+      Type.before('validate', function () {
+        this.random = 'zxcv';
+      });
+
     });
 
     describe('with valid data', function () {
@@ -241,6 +247,7 @@ describe('Model-extending constructor', function () {
       it('should be valid', function () {
         validation.valid.should.equal(true);
       });
+
     });
 
     describe('with invalid data', function () {
@@ -257,7 +264,26 @@ describe('Model-extending constructor', function () {
       it('should return a ValidationError', function () {
         (validation instanceof validate.ValidationError).should.equal(true);
       });
-    })
+
+    });
+
+    describe('with before validate hook', function () {
+
+      before(function (done) {
+        Type.backend.reset();
+        Type.create({ email: 'valid@email.com' }, function (error, _instance) {
+          err = error;
+          instance = _instance;
+          done();
+        });         
+      });
+
+      it('should invoke the callback', function () {
+        instance.random.should.equal('zxcv');
+      });
+
+    });
+
 
   });
 
@@ -267,7 +293,7 @@ describe('Model-extending constructor', function () {
     before(function () {
       Type = Model.extend(null, {
         schema: {
-          email: { type: 'string', format: 'email' },
+          email:  { type: 'string', format: 'email' },
           random: { type: 'string' }
         }
       });
