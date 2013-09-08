@@ -187,6 +187,14 @@ describe('Model-extending constructor', function () {
       expect((new NoID)._id).equals(undefined);
     });
 
+    it('should initialize non-default uniqueID', function () {
+      OtherID = Model.extend(null, { 
+        schema: { other: {type: 'string' } },
+        uniqueID: 'other'
+      });
+      new OtherID().other.should.be.defined;
+    });
+
     it('should set attrs defined in schema', function () {
       instance = new Type({
         x:   'x',
