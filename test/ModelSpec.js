@@ -26,7 +26,7 @@ chai.should();
 describe('Model-extending constructor', function () {
 
 
-  var Type, SubType, instance, validation, err;
+  var Type, SubType, instance, instances, data, validation, err;
 
 
   describe('...', function () {
@@ -420,6 +420,30 @@ describe('Model-extending constructor', function () {
           email: { type: 'string', format: 'email' }
         }
       });
+    });
+
+    describe('without conditions', function () {
+
+      before(function (done) {
+        data = { email: 'valid@example.com' };
+        Type.create(data, function (e, type) {
+          Type.find({}, function (error, _instances) {
+            err = error;
+            instances = _instances;
+            done();
+          });
+        });        
+      });
+
+      it('should provide a null error', function () {
+        expect(err).equals(null);
+      })
+
+      it('should provide an array of instances', function () {
+        (Array.isArray(instances)).should.equal(true);
+        instances[0].email.should.equal(data.email);
+      });
+
     });
 
     describe('by attribute', function () {
