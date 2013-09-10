@@ -112,6 +112,14 @@ Perform model-specific operations before validating or creating instances.
 Modinha uses an in-memory backend by default. This works like a mock backend for testing and simplifies initial stages of development. Adapters for a few different data stores are planned, including Redis, Riak, and MongoDB. You can also write your own adapters fairly easily. Look at the [JSONFile](https://github.com/christiansmith/ModinhaJSONFile) backend for an example.
 
 
+## TODO
+
+* asynchronous before hooks
+* initialize backend by module-name/path
+* "private" values (filter out things like hashed passwords)
+* attr mappings (for easy API consumption)
+* test known edge cases
+
 
 ## The MIT License
 
