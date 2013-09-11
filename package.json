@@ -18,7 +18,8 @@
     "grunt": "~0.4.1",
     "grunt-mocha-cov": "0.0.7",
     "chai": "~1.7.2",
-    "grunt-release": "~0.5.1"
+    "grunt-release": "~0.5.1",
+    "modinha-json": "0.0.4"
   },
   "dependencies": {
     "underscore": "~1.5.1",

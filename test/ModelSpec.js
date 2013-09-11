@@ -7,7 +7,8 @@ var cwd = process.cwd()
   , chai = require('chai')
   , validate = require(path.join(cwd, 'lib/validate'))
   , Model = require(path.join(cwd, 'lib/Model'))
-  , Backend = require(path.join(cwd, 'lib/Backend'))  
+  , Backend = require(path.join(cwd, 'lib/Backend'))
+  , JSONFile = require('modinha-json')  
   , expect = chai.expect
   ;
 
@@ -80,6 +81,43 @@ describe('Model-extending constructor', function () {
     it('should initialize a default backend', function () {
       expect(Type.backend instanceof Backend).equals(true);
     });    
+
+  });
+
+
+  describe('backend', function () {
+
+    describe('configured for all models', function () {
+
+      var adapter;
+
+      before(function () {
+        adapter = Model.adapter;
+        Model.adapter = {
+          type: 'modinha-json',
+          path: 'path/to/data'
+        };
+        Type = Model.extend('Types', null, { schema: {} });
+      });
+
+      after(function () {
+        Model.adapter = adapter;
+      });
+
+      it('should be an instance of the configured adapter type', function () {
+        expect(Type.backend instanceof JSONFile).equals(true);
+      });
+
+      // oops this shouldn't go here. refactor the tests...
+      it('should have a collection property', function () {
+        Type.collection.should.equal('types');
+      });
+
+    });
+
+    describe('configured for a specific model', function () {
+
+    });
 
   });
 
