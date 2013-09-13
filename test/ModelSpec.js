@@ -364,7 +364,6 @@ describe('Model-extending constructor', function () {
 
     });
 
-
   });
 
 
@@ -573,7 +572,8 @@ describe('Model-extending constructor', function () {
     before(function () {
       Type = Model.extend(null, {
         schema: {
-          email: { type: 'string', format: 'email' }
+          email: { type: 'string', format: 'email' },
+          secret: { type: 'string', private: true }
         }
       });
     });
@@ -582,8 +582,8 @@ describe('Model-extending constructor', function () {
 
       before(function (done) {
         Type.backend.reset();
-        Type.create({ email: 'initial@email.com' }, function (e, type) {
-          Type.update({ _id: type._id }, { email: 'updated@email.com' }, function (error, _instance) {
+        Type.create({ email: 'initial@email.com', secret: '123' }, function (e, type) {
+          Type.update({ _id: type._id }, { email: 'updated@email.com', secret: '234' }, function (error, _instance) {
             err = error;
             instance = _instance;
             done();
@@ -605,6 +605,29 @@ describe('Model-extending constructor', function () {
 
       it('should update the timestamp', function () {
         instance.modified.should.not.equal(instance.created);
+      });
+
+      it('should ignore private properties', function () {
+        Type.backend.documents[0].secret.should.equal('123')
+      });
+
+    });
+
+    describe('with valid data and private option', function () {
+
+      before(function (done) {
+        Type.backend.reset();
+        Type.create({ email: 'initial@email.com', secret: '123' }, function (e, type) {
+          Type.update({ _id: type._id }, { email: 'updated@email.com', secret: '234' }, { private: true }, function (error, _instance) {
+            err = error;
+            instance = _instance;
+            done();
+          });
+        }); 
+      });
+
+      it('should set private properties', function () {
+        Type.backend.documents[0].secret.should.equal('234')
       });
 
     });
