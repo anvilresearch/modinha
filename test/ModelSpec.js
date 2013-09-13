@@ -374,6 +374,7 @@ describe('Model-extending constructor', function () {
       Type = Model.extend(null, {
         schema: {
           email:  { type: 'string', format: 'email' },
+          secret: { type: 'string', private: true },
           random: { type: 'string' }
         }
       });
@@ -387,7 +388,7 @@ describe('Model-extending constructor', function () {
 
       before(function (done) {
         Type.backend.reset();
-        Type.create({ email: 'valid@email.com' }, function (error, _instance) {
+        Type.create({ email: 'valid@email.com', secret: '123' }, function (error, _instance) {
           err = error;
           instance = _instance;
           done();
@@ -412,6 +413,10 @@ describe('Model-extending constructor', function () {
 
       it('should be saved to the backend', function () {
         Type.backend.documents[0].created.should.equal(instance.created);
+      });
+
+      it('should set private properties', function () {
+        instance.secret.should.equal('123')
       });
 
     });
@@ -466,7 +471,8 @@ describe('Model-extending constructor', function () {
     before(function () {
       Type = Model.extend(null, {
         schema: {
-          email: { type: 'string', format: 'email' }
+          email: { type: 'string', format: 'email' },
+          secret: { type: 'string', private: true }
         }
       });
     });
@@ -475,6 +481,7 @@ describe('Model-extending constructor', function () {
 
       before(function (done) {
         data = { email: 'valid@example.com' };
+        Type.backend.reset();
         Type.create(data, function (e, type) {
           Type.find({}, function (error, _instances) {
             err = error;
@@ -514,6 +521,46 @@ describe('Model-extending constructor', function () {
 
       it('should provide an instance', function () {
         (instance instanceof Type).should.equal(true);
+      });
+
+    });
+
+    describe('without private values option', function () {
+
+      before(function (done) {
+        var data = { email: 'valid@example.com', secret: '123' };
+        Type.backend.reset();
+        Type.create(data, function (e, type) {
+          Type.find({ email: data.email }, function (error, _instance) {
+            err = error;
+            instance = _instance;
+            done();
+          });
+        });        
+      });
+
+      it('should not include private values', function () {
+        expect(instance.secret).equals(undefined);
+      });
+
+    });
+
+    describe('with private values option', function () {
+
+      before(function (done) {
+        var data = { email: 'valid@example.com', secret: '123' };
+        Type.backend.reset();
+        Type.create(data, function (e, type) {
+          Type.find({ email: data.email }, { private: true }, function (error, _instance) {
+            err = error;
+            instance = _instance;
+            done();
+          });
+        });        
+      });
+
+      it('should include private values', function () {
+        instance.secret.should.equal('123');
       });
 
     });
