@@ -201,7 +201,8 @@ describe('Model-extending constructor', function () {
             }
           },
           z: { type: 'boolean', default: true },
-          f: { type: 'string', default: function () { return 'generated'; } }
+          f: { type: 'string', default: function () { return 'generated'; } },
+          p: { type: 'string', private: true }
         }
       });
     });
@@ -260,6 +261,16 @@ describe('Model-extending constructor', function () {
     it('should generate defaults defined in the schema by function', function () {
       instance = new Type();
       instance.f.should.equal('generated');
+    });
+
+    it('should skip private values by default', function () {
+      instance = new Type({ p: 'secret' });
+      expect(instance.p).equals(undefined);
+    });
+
+    it('should optionally include private values', function () {
+      instance = new Type({ p: 'secret' }, { private: true });
+      instance.p.should.equal('secret');      
     });
 
   });
