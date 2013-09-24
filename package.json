@@ -23,7 +23,8 @@
   },
   "dependencies": {
     "underscore": "~1.5.1",
-    "revalidator": "~0.1.5"
+    "revalidator": "~0.1.5",
+    "async": "~0.2.9"
   },
   "bugs": {
     "url": "https://github.com/christiansmith/Modinha/issues"

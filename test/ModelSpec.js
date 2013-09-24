@@ -187,6 +187,26 @@ describe('Model-extending constructor', function () {
   });
 
 
+  describe('before hook registration', function () {
+
+    var hook;
+
+    before(function () {
+      Type = Model.extend(null, {
+        schema: {}
+      });
+
+      hook = function () {};
+      Type.before('create', hook);
+    });
+
+    it('should associate a function with an event', function () {
+      Type.hooks.create.indexOf(hook).should.equal(0);
+    });
+
+  });
+
+
   describe('instance initialization', function () {
 
     before(function () {
@@ -311,8 +331,9 @@ describe('Model-extending constructor', function () {
         }
       });
 
-      Type.before('validate', function () {
-        this.random = 'zxcv';
+      Type.before('validate', function (instance, callback) {
+        instance.random = 'zxcv';
+        callback(null);
       });
 
     });
@@ -374,13 +395,15 @@ describe('Model-extending constructor', function () {
         schema: {
           email:  { type: 'string', format: 'email' },
           secret: { type: 'string', private: true },
-          random: { type: 'string' }
+          async:  { type: 'string' }
         }
       });
 
-      Type.before('create', function () {
-        this.random = 'zxcv';
-      });
+      Type.before('create', function (instance, callback) {
+        instance.async = 'result';
+        callback(null);
+      })
+
     });
 
     describe('with valid data', function () {
@@ -415,7 +438,11 @@ describe('Model-extending constructor', function () {
       });
 
       it('should set private properties', function () {
-        instance.secret.should.equal('123')
+        instance.secret.should.equal('123');
+      });
+
+      it('should invoke before "create" hooks', function () {
+        instance.async.should.equal('result');
       });
 
     });
@@ -443,23 +470,6 @@ describe('Model-extending constructor', function () {
 
     describe('with a duplicate values on unique attributes', function () {
       it('should provide a "duplicate value" error');
-    });
-
-    describe('with before create hook', function () {
-
-      before(function (done) {
-        Type.backend.reset();
-        Type.create({ email: 'valid@email.com' }, function (error, _instance) {
-          err = error;
-          instance = _instance;
-          done();
-        });         
-      });
-
-      it('should invoke the callback', function () {
-        instance.random.should.equal('zxcv');
-      });
-
     });
 
   });
