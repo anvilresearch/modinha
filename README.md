@@ -94,16 +94,18 @@ Models have CRUD-like static methods.
 
 #### Hooks
 
-Perform model-specific operations before validating or creating instances.
+Perform asynchronous model-specific operations before validating or creating instances.
 
     var Widget = Modinha.extend(null, { schema: { name: { type: 'string' } } });
 
-    Widget.before('create', function () {
-      this.name += ' widget';
+    Widget.before('create', function (instance, callback) {
+      instance.name += ' widget';
+      callback(null);
     });
 
-    Widget.before('validate', function () {
-      console.log('hope this is valid...');
+    Widget.before('validate', function (instance, callback) {
+      instance.foo = 'bar';
+      callback(null);
     });
 
 
