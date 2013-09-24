@@ -331,7 +331,7 @@ describe('Model-extending constructor', function () {
         }
       });
 
-      Type.before('validate', function (instance, callback) {
+      Type.before('validate', function (instance, attrs, callback) {
         instance.random = 'zxcv';
         callback(null);
       });
@@ -399,7 +399,7 @@ describe('Model-extending constructor', function () {
         }
       });
 
-      Type.before('create', function (instance, callback) {
+      Type.before('create', function (instance, attrs, callback) {
         instance.async = 'result';
         callback(null);
       })
