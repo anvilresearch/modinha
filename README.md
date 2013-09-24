@@ -98,12 +98,12 @@ Perform asynchronous model-specific operations before validating or creating ins
 
     var Widget = Modinha.extend(null, { schema: { name: { type: 'string' } } });
 
-    Widget.before('create', function (instance, callback) {
+    Widget.before('create', function (instance, attrs, callback) {
       instance.name += ' widget';
       callback(null);
     });
 
-    Widget.before('validate', function (instance, callback) {
+    Widget.before('validate', function (instance, attrs, callback) {
       instance.foo = 'bar';
       callback(null);
     });
