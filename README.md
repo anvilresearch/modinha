@@ -108,6 +108,22 @@ Perform asynchronous model-specific operations before validating or creating ins
       callback(null);
     });
 
+Another example, with a completion hook. Here we expose a value without storing it.
+
+    Client.before('create', function (client, attrs, callback) {
+      Credentials.create({ role: 'client' }, function (err, credentials) {
+        if (err) { return callback(err); }
+        client.key = credentials.key;
+        callback(null, credentials);
+      });
+    });
+
+    Client.before('complete', function (client, attrs, result, callback) {
+      var credentials = result.beforeCreate[0];
+      client.secret = credentials.secret;
+      callback(null);
+    });
+
 
 ## Persistence
 
