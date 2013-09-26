@@ -393,16 +393,28 @@ describe('Model-extending constructor', function () {
     before(function () {
       Type = Model.extend(null, {
         schema: {
-          email:  { type: 'string', format: 'email' },
-          secret: { type: 'string', private: true },
-          async:  { type: 'string' }
+          email:          { type: 'string', format: 'email' },
+          secret:         { type: 'string', private: true },
+          beforeValidate: { type: 'boolean' },
+          beforeCreate:   { type: 'boolean' },
+          beforeComplete: { type: 'boolean' }
         }
       });
 
-      Type.before('create', function (instance, attrs, callback) {
-        instance.async = 'result';
+      Type.before('validate', function (instance, attrs, callback) {
+        instance.beforeValidate = true;
         callback(null);
-      })
+      });
+
+      Type.before('create', function (instance, attrs, callback) {
+        instance.beforeCreate = true;
+        callback(null);
+      });
+
+      Type.before('complete', function (instance, attrs, result, callback) {
+        instance.beforeComplete = true;
+        callback(null);
+      });
 
     });
 
@@ -441,8 +453,16 @@ describe('Model-extending constructor', function () {
         instance.secret.should.equal('123');
       });
 
+      it('should invoke before "validate" hooks', function () {
+        instance.beforeValidate.should.equal(true);
+      });
+
       it('should invoke before "create" hooks', function () {
-        instance.async.should.equal('result');
+        instance.beforeCreate.should.equal(true);
+      });
+
+      it('should invoke before "complete" hooks', function () {
+        instance.beforeComplete.should.equal(true);
       });
 
     });
@@ -582,10 +602,29 @@ describe('Model-extending constructor', function () {
     before(function () {
       Type = Model.extend(null, {
         schema: {
-          email: { type: 'string', format: 'email' },
-          secret: { type: 'string', private: true }
+          email:  { type: 'string', format: 'email' },
+          secret: { type: 'string', private: true },
+          beforeValidate: { type: 'boolean' },
+          beforeUpdate:   { type: 'boolean' },
+          beforeComplete: { type: 'boolean' }          
         }
       });
+
+      Type.before('validate', function (instance, attrs, callback) {
+        instance.beforeValidate = true;
+        callback(null);
+      });
+
+      Type.before('update', function (instance, attrs, callback) {
+        instance.beforeUpdate = true;
+        callback(null);
+      });
+
+      Type.before('complete', function (instance, attrs, result, callback) {
+        instance.beforeComplete = true;
+        callback(null);
+      });
+
     });
 
     describe('with valid data', function () {
@@ -619,6 +658,18 @@ describe('Model-extending constructor', function () {
 
       it('should ignore private properties', function () {
         Type.backend.documents[0].secret.should.equal('123')
+      });
+
+      it('should invoke before "validate" hooks', function () {
+        instance.beforeValidate.should.equal(true);
+      });
+
+      it('should invoke before "update" hooks', function () {
+        instance.beforeUpdate.should.equal(true);
+      });
+
+      it('should invoke before "complete" hooks', function () {
+        instance.beforeComplete.should.equal(true);
       });
 
     });
