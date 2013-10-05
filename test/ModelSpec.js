@@ -27,7 +27,7 @@ chai.should();
 describe('Model-extending constructor', function () {
 
 
-  var Type, SubType, instance, instances, data, validation, err;
+  var Type, SubType, instance, instances, data, validation, err, created;
 
 
   describe('...', function () {
@@ -148,7 +148,7 @@ describe('Model-extending constructor', function () {
   });
 
 
-  describe('schema', function () {
+  describe('schema with defaults', function () {
 
     before(function () {
       Type = Model.extend(null, { schema: {} });
@@ -164,6 +164,22 @@ describe('Model-extending constructor', function () {
 
     it('should have "modified" timestamp by default', function () {
       Type.schema.modified.type.should.equal('any');
+    });
+
+  });
+
+  describe('schema without timestamps', function () {
+
+    before(function () {
+      Type = Model.extend(null, { schema: {}, timestamps: false });
+    });
+
+    it('should not have "created" timestamp', function () {
+      expect(Type.schema.created).equals(undefined);
+    });
+
+    it('should not have "modified" timestamp', function () {
+      expect(Type.schema.modified).equals(undefined);
     });
 
   });
@@ -376,7 +392,7 @@ describe('Model-extending constructor', function () {
           err = error;
           instance = _instance;
           done();
-        });         
+        });
       });
 
       it('should invoke the callback', function () {
@@ -426,7 +442,7 @@ describe('Model-extending constructor', function () {
           err = error;
           instance = _instance;
           done();
-        }); 
+        });
       });
 
       it('should provide a null error', function () {
@@ -443,6 +459,10 @@ describe('Model-extending constructor', function () {
 
       it('should set the "modified" timestamp', function () {
         instance.modified.should.be.defined;
+      });
+
+      it('should set the "created" and "modified" timestamps to same point in time', function () {
+        instance.created.should.equal(instance.modified);
       });
 
       it('should be saved to the backend', function () {
@@ -467,6 +487,66 @@ describe('Model-extending constructor', function () {
 
     });
 
+    describe('with timestamp values passed', function () {
+
+      before(function (done) {
+        Type.backend.reset();
+        Type.create({ created: 'something', modified: 'provided' }, function (error, _instance) {
+          err = error;
+          instance = _instance;
+          done();
+        });
+      });
+
+      it('should provide a null error', function () {
+        expect(err).equals(null);
+      });
+
+      it('should provide an instance', function () {
+        (instance instanceof Type).should.equal(true);
+      });
+
+      it('should set the "created" timestamp', function () {
+        instance.created.should.be.defined;
+      });
+
+      it('should discard the passed "created" value', function () {
+        instance.created.should.not.equals('something');
+        (instance.created instanceof Date).should.equal(true);
+      });
+
+      it('should set the "modified" timestamp', function () {
+        instance.modified.should.be.defined;
+      });
+
+      it('should discard the passed "modified" value', function () {
+        instance.modified.should.not.equals('provided');
+        (instance.modified instanceof Date).should.equal(true);
+      });
+
+      it('should set the "created" and "modified" timestamps to same point in time', function () {
+        instance.created.should.equal(instance.modified);
+      });
+
+      it('should be saved to the backend', function () {
+        Type.backend.documents[0].created.should.equal(instance.created);
+      });
+
+      it('should invoke before "validate" hooks', function () {
+        instance.beforeValidate.should.equal(true);
+      });
+
+      it('should invoke before "create" hooks', function () {
+        instance.beforeCreate.should.equal(true);
+      });
+
+      it('should invoke before "complete" hooks', function () {
+        instance.beforeComplete.should.equal(true);
+      });
+
+    });
+
+
     describe('with invalid data', function () {
 
       before(function (done) {
@@ -475,7 +555,7 @@ describe('Model-extending constructor', function () {
           err = error;
           instance = _instance;
           done();
-        }); 
+        });
       });
 
       it('should provide a validation error', function () {
@@ -490,6 +570,102 @@ describe('Model-extending constructor', function () {
 
     describe('with a duplicate values on unique attributes', function () {
       it('should provide a "duplicate value" error');
+    });
+
+  });
+
+  describe('instance creation without timestamps', function () {
+
+    before(function () {
+      Type = Model.extend(null, {
+        schema: {
+          email:          { type: 'string', format: 'email' },
+          secret:         { type: 'string', private: true },
+          created:        { type: 'string' },
+          modified:       { type: 'string' }
+        },
+        timestamps: false
+      });
+    });
+
+    describe('with valid data', function () {
+
+      before(function (done) {
+        Type.backend.reset();
+        Type.create({ email: 'valid@email.com', secret: '123' }, function (error, _instance) {
+          err = error;
+          instance = _instance;
+          done();
+        });
+      });
+
+      it('should provide a null error', function () {
+        expect(err).equals(null);
+      });
+
+      it('should provide an instance', function () {
+        (instance instanceof Type).should.equal(true);
+      });
+
+      it('should not set the "created" attribute', function () {
+        expect(instance.created).equals(undefined);
+      });
+
+      it('should not set the "modified" timestamp', function () {
+        expect(instance.modified).equals(undefined);
+      });
+
+      it('should be saved to the backend', function () {
+        Type.backend.documents[0].should.equal(instance);
+      });
+
+      it('should set private properties', function () {
+        instance.secret.should.equal('123');
+      });
+
+    });
+
+    describe('with timestamp values passed', function () {
+
+      before(function (done) {
+        Type.backend.reset();
+        Type.create({ created: 'yesterday', modified: 'today' }, function (error, _instance) {
+          err = error;
+          instance = _instance;
+          done();
+        });
+      });
+
+      it('should provide a null error', function () {
+        expect(err).equals(null);
+      });
+
+      it('should provide an instance', function () {
+        (instance instanceof Type).should.equal(true);
+      });
+
+      it('should set the "created" attribute', function () {
+        instance.created.should.be.defined;
+      });
+
+      it('should not override the passed "created" value', function () {
+        instance.created.should.equals('yesterday');
+        (typeof instance.created).should.equal('string');
+      });
+
+      it('should set the "modified" attribute', function () {
+        instance.modified.should.be.defined;
+      });
+
+      it('should not override the passed "modified" value', function () {
+        instance.modified.should.equals('today');
+        (typeof instance.modified).should.equal('string');
+      });
+
+      it('should be saved to the backend', function () {
+        Type.backend.documents[0].should.equal(instance);
+      });
+
     });
 
   });
@@ -517,7 +693,7 @@ describe('Model-extending constructor', function () {
             instances = _instances;
             done();
           });
-        });        
+        });
       });
 
       it('should provide a null error', function () {
@@ -527,6 +703,11 @@ describe('Model-extending constructor', function () {
       it('should provide an array of instances', function () {
         (Array.isArray(instances)).should.equal(true);
         instances[0].email.should.equal(data.email);
+      });
+
+      it('should include "created" and "modified" timestamps', function () {
+        instances[0].created.should.be.defined;
+        instances[0].modified.should.be.defined;
       });
 
     });
@@ -541,7 +722,7 @@ describe('Model-extending constructor', function () {
             instance = _instance;
             done();
           });
-        });        
+        });
       });
 
       it('should provide a null error', function () {
@@ -550,6 +731,11 @@ describe('Model-extending constructor', function () {
 
       it('should provide an instance', function () {
         (instance instanceof Type).should.equal(true);
+      });
+
+      it('should include "created" and "modified" timestamps', function () {
+        instance.created.should.be.defined;
+        instance.modified.should.be.defined;
       });
 
     });
@@ -565,11 +751,16 @@ describe('Model-extending constructor', function () {
             instance = _instance;
             done();
           });
-        });        
+        });
       });
 
       it('should not include private values', function () {
         expect(instance.secret).equals(undefined);
+      });
+
+      it('should include "created" and "modified" timestamps', function () {
+        instance.created.should.be.defined;
+        instance.modified.should.be.defined;
       });
 
     });
@@ -585,11 +776,139 @@ describe('Model-extending constructor', function () {
             instance = _instance;
             done();
           });
-        });        
+        });
       });
 
       it('should include private values', function () {
         instance.secret.should.equal('123');
+      });
+
+      it('should include "created" and "modified" timestamps', function () {
+        instance.created.should.be.defined;
+        instance.modified.should.be.defined;
+      });
+
+    });
+
+  });
+
+
+  describe('instance retrieval without timestamps', function () {
+
+    before(function () {
+      Type = Model.extend(null, {
+        schema: {
+          email: { type: 'string', format: 'email' },
+          secret: { type: 'string', private: true }
+        },
+        timestamps: false
+      });
+    });
+
+    describe('without conditions', function () {
+
+      before(function (done) {
+        data = { email: 'valid@example.com' };
+        Type.backend.reset();
+        Type.create(data, function (e, type) {
+          Type.find({}, function (error, _instances) {
+            err = error;
+            instances = _instances;
+            done();
+          });
+        });
+      });
+
+      it('should provide a null error', function () {
+        expect(err).equals(null);
+      })
+
+      it('should provide an array of instances', function () {
+        (Array.isArray(instances)).should.equal(true);
+        instances[0].email.should.equal(data.email);
+      });
+
+      it('should not include "created" and "modified" timestamps', function () {
+        expect(instances[0].created).equals(undefined);
+        expect(instances[0].modified).equals(undefined);
+      });
+
+    });
+
+    describe('by attribute', function () {
+
+      before(function (done) {
+        var data = { email: 'valid@example.com' };
+        Type.create(data, function (e, type) {
+          Type.find({ email: data.email }, function (error, _instance) {
+            err = error;
+            instance = _instance;
+            done();
+          });
+        });
+      });
+
+      it('should provide a null error', function () {
+        expect(err).equals(null);
+      })
+
+      it('should provide an instance', function () {
+        (instance instanceof Type).should.equal(true);
+      });
+
+      it('should not include "created" and "modified" timestamps', function () {
+        expect(instance.created).equals(undefined);
+        expect(instance.modified).equals(undefined);
+      });
+
+    });
+
+    describe('without private values option', function () {
+
+      before(function (done) {
+        var data = { email: 'valid@example.com', secret: '123' };
+        Type.backend.reset();
+        Type.create(data, function (e, type) {
+          Type.find({ email: data.email }, function (error, _instance) {
+            err = error;
+            instance = _instance;
+            done();
+          });
+        });
+      });
+
+      it('should not include private values', function () {
+        expect(instance.secret).equals(undefined);
+      });
+
+      it('should include "created" and "modified" timestamps', function () {
+        expect(instance.created).equals(undefined);
+        expect(instance.modified).equals(undefined);
+      });
+
+    });
+
+    describe('with private values option', function () {
+
+      before(function (done) {
+        var data = { email: 'valid@example.com', secret: '123' };
+        Type.backend.reset();
+        Type.create(data, function (e, type) {
+          Type.find({ email: data.email }, { private: true }, function (error, _instance) {
+            err = error;
+            instance = _instance;
+            done();
+          });
+        });
+      });
+
+      it('should include private values', function () {
+        instance.secret.should.equal('123');
+      });
+
+      it('should include "created" and "modified" timestamps', function () {
+        expect(instance.created).equals(undefined);
+        expect(instance.modified).equals(undefined);
       });
 
     });
@@ -632,12 +951,13 @@ describe('Model-extending constructor', function () {
       before(function (done) {
         Type.backend.reset();
         Type.create({ email: 'initial@email.com', secret: '123' }, function (e, type) {
+          created = type.created;
           Type.update({ _id: type._id }, { email: 'updated@email.com', secret: '234' }, function (error, _instance) {
             err = error;
             instance = _instance;
             done();
           });
-        }); 
+        });
       });
 
       it('should provide a null error', function () {
@@ -652,12 +972,64 @@ describe('Model-extending constructor', function () {
         Type.backend.documents[0].email.should.equal('updated@email.com');
       });
 
-      it('should update the timestamp', function () {
+      it('should not update the created timestamp', function () {
+        instance.created.should.equal(created);
+      });
+
+      it('should update the modified timestamp', function () {
         instance.modified.should.not.equal(instance.created);
       });
 
       it('should ignore private properties', function () {
         Type.backend.documents[0].secret.should.equal('123')
+      });
+
+      it('should invoke before "validate" hooks', function () {
+        instance.beforeValidate.should.equal(true);
+      });
+
+      it('should invoke before "update" hooks', function () {
+        instance.beforeUpdate.should.equal(true);
+      });
+
+      it('should invoke before "complete" hooks', function () {
+        instance.beforeComplete.should.equal(true);
+      });
+
+    });
+
+    describe('with timestamp values passed', function () {
+
+      before(function (done) {
+        Type.backend.reset();
+        Type.create({ email: 'initial@email.com', secret: '123' }, function (e, type) {
+          created = type.created;
+          Type.update({ _id: type._id }, { created: 'yesterday', modified: 'today' }, function (error, _instance) {
+            err = error;
+            instance = _instance;
+            done();
+          });
+        });
+      });
+
+      it('should provide a null error', function () {
+        expect(err).equals(null);
+      });
+
+      it('should not update the created timestamp', function () {
+        instance.created.should.equal(created);
+      });
+
+      it('should not override the created attribute', function () {
+        instance.created.should.not.equal('yesterday');
+      });
+
+      it('should update the modified timestamp', function () {
+        instance.modified.should.not.equal(instance.created);
+      });
+
+      it('should not override the modified attribute', function () {
+        instance.modified.should.not.equal('today');
       });
 
       it('should invoke before "validate" hooks', function () {
@@ -684,7 +1056,7 @@ describe('Model-extending constructor', function () {
             instance = _instance;
             done();
           });
-        }); 
+        });
       });
 
       it('should set private properties', function () {
@@ -703,7 +1075,7 @@ describe('Model-extending constructor', function () {
             instance = _instance;
             done();
           });
-        }); 
+        });
       });
 
       it('should provide a validation error', function () {
@@ -712,6 +1084,97 @@ describe('Model-extending constructor', function () {
 
       it('should not provide an instance', function () {
         expect(instance).equals(undefined);
+      });
+
+    });
+
+  });
+
+
+  describe('instance updates without timestamps', function () {
+
+    before(function () {
+      Type = Model.extend(null, {
+        schema: {
+          email:    { type: 'string', format: 'email' },
+          secret:   { type: 'string', private: true },
+          created:  { type: 'string' },
+          modified: { type: 'string' }
+        },
+        timestamps: false
+      });
+    });
+
+    describe('with valid data', function () {
+
+      before(function (done) {
+        Type.backend.reset();
+        Type.create({ email: 'initial@email.com', secret: '123' }, function (e, type) {
+          created = type.created;
+          Type.update({ _id: type._id }, { email: 'updated@email.com', secret: '234' }, function (error, _instance) {
+            err = error;
+            instance = _instance;
+            done();
+          });
+        });
+      });
+
+      it('should provide a null error', function () {
+        expect(err).equals(null);
+      });
+
+      it('should provide an updated instance', function () {
+        instance.email.should.equal('updated@email.com');
+      });
+
+      it('should store the updated instance', function () {
+        Type.backend.documents[0].email.should.equal('updated@email.com');
+      });
+
+      it('should not set the "created" attribute', function () {
+        expect(instance.created).equals(undefined);
+      });
+
+      it('should not set the "modified" timestamp', function () {
+        expect(instance.modified).equals(undefined);
+      });
+
+    });
+
+    describe('with timestamp values passed', function () {
+
+      before(function (done) {
+        Type.backend.reset();
+        Type.create({ email: 'initial@email.com', secret: '123' }, function (e, type) {
+          created = type.created;
+          Type.update({ _id: type._id }, { created: 'yesterday', modified: 'today' }, function (error, _instance) {
+            err = error;
+            instance = _instance;
+            done();
+          });
+        });
+      });
+
+      it('should provide a null error', function () {
+        expect(err).equals(null);
+      });
+
+      it('should set the "created" attribute', function () {
+        instance.created.should.be.defined;
+      });
+
+      it('should not override the passed "created" value', function () {
+        instance.created.should.equals('yesterday');
+        (typeof instance.created).should.equal('string');
+      });
+
+      it('should set the "modified" attribute', function () {
+        instance.modified.should.be.defined;
+      });
+
+      it('should not override the passed "modified" value', function () {
+        instance.modified.should.equals('today');
+        (typeof instance.modified).should.equal('string');
       });
 
     });
@@ -732,7 +1195,7 @@ describe('Model-extending constructor', function () {
             err = error;
             done();
           });
-        }); 
+        });
       });
 
       it('should provide a null error', function () {
