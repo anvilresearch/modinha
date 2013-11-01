@@ -24,6 +24,7 @@ Modinha is a toolkit for creating persisted models. This is for programmers who 
 
     var Modinha = require('modinha');
 
+
 #### Define a model based on a schema
 
     var Account = Modinha.define({
@@ -34,9 +35,22 @@ Modinha is a toolkit for creating persisted models. This is for programmers who 
       created:  { type: 'string', default: Modinha.default.timestamp, format: 'utc-millisec' }
     });
 
+
 #### Create an instance
 
     var account = new Account({ email: 'john@smith.com' }, options);
+
+
+#### Validation
+
+Validate an uninitialized object against the model's schema.
+
+    Account.validate({...})
+
+Validate an instance.
+
+    var account = new Account({...})
+      , validation = account.validate()
 
 
 #### Initializing Objects
@@ -95,20 +109,6 @@ Or predefine named mappings:
 Get a subset of an object.
 
     Account.initialize({...}, { select: ['name', 'email'] })
-
-
-#### Validation
-
-Validate an uninitialized object against the model's schema.
-
-    Account.validate({...})
-
-Validate an instance.
-
-    var account = new Account({...})
-      , validation = account.validate()
-
-
 
 
 #### Augment the model
