@@ -39,6 +39,78 @@ Modinha is a toolkit for creating persisted models. This is for programmers who 
     var account = new Account({ email: 'john@smith.com' }, options);
 
 
+#### Initializing Objects
+
+Like the constructor, a model's static initialize method takes data and options arguments. 
+    
+With a null or undefined data argument, initialize will return an instance of the model with default values.
+
+    Account.initialize()
+
+For cases where this is undesirable, such as initializing database results, use the nullify option
+
+    Account.initialize(undefined, { nullify: true })
+
+Like the constructor, initialize will set any properties you provide that are defined in the schema.
+
+    Account.initialize({ email: 'john@example.com' })
+
+Default values will not be set if values for the property are provided.
+
+    Account.initialize({ _id: '...', email: 'john@example.com' })
+
+Properties not defined in the schema are ignored.
+
+    Account.initialize({ hacker: 'p0wn3d' })
+
+Private schema properties are also ignored by default. This is to prevent accidental disclosure of sensitive values, such as hashed passwords. To include private values in an instance, set the private option to true.
+
+    Account.initialize({ hash: 'secret', ... }, { private: true })
+
+Unlike the constructor, the static initialize method can also instantiate multiple objects in one call, parse json, and any combination of the two.
+
+    Account.initialize([{...},{...},{...}])
+    Account.initialize('{ "json": true }')
+    Account.initialize('[{},{},{}]')
+    Account.initialize(['{}', '{}'])
+    
+    
+#### Mappings
+
+Pass a mapping in the options.
+
+    Account.initialize({ facebook: { bs: {}, id: '...' } }, { map: { '_id': 'facebook.id' } })
+
+Or predefine named mappings:
+
+    Account.maps.facebook = {
+      '_id': 'facebook.id'
+    };
+
+    Account.initialize(fbData, { map: 'facebook' });
+
+
+#### Selections
+
+Get a subset of an object.
+
+    Account.initialize({...}, { select: ['name', 'email'] })
+
+
+#### Validation
+
+Validate an uninitialized object against the model's schema.
+
+    Account.validate({...})
+
+Validate an instance.
+
+    var account = new Account({...})
+      , validation = account.validate()
+
+
+
+
 #### Augment the model
 
 This model can be easily augmented with static and prototype methods.
@@ -74,6 +146,9 @@ This model can be easily augmented with static and prototype methods.
         });
     }
 
+When a model requires many methods that are general and identical to other models, duplication can be avoided by extending the model with mixins.
+
+
 #### Extend the model
 
 Pass in a "class" (constructor) or explicit prototype and static augmentations.
@@ -85,50 +160,6 @@ Pass in a "class" (constructor) or explicit prototype and static augmentations.
 
     var Admin = Account.inherit(proto, static);
 
-#### Initializing Objects
-
-    new Account(data, options);
-    
-    Account.initialize()
-    Account.initialize({ email: 'john@example.com' })
-    Account.initialize({ _id: '...', email: 'john@example.com' })
-    Account.initialize({ hacker: 'p0wn3d' })
-    Account.initialize({ hash: 'secret', ... }, { private: true })
-    Account.initialize(undefined, { nullify: true })
-    
-    
-#### Mappings
-
-Pass a mapping in the options.
-
-    Account.initialize({ facebook: { bs: {}, id: '...' } }, { map: { '_id': 'facebook.id' } })
-
-Or predefine named mappings:
-
-    Account.maps.facebook = {
-      '_id': 'facebook.id'
-    };
-
-    Account.initialize(fbData, { map: 'facebook' });
-
-
-#### Selections
-
-Get a subset of an object.
-
-    Account.initialize({...}, { select: ['name', 'email'] })
-
-
-#### Validation
-
-Validate an uninitialized object against the model's schema.
-
-    Account.validate({...})
-
-Validate an instance.
-
-    var account = new Account({...})
-      , validation = account.validate()
 
 
 ## The MIT License
