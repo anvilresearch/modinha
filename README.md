@@ -1,6 +1,18 @@
 # Modinha
 
-Modinha is a schema-based object modeling package for Node.js. Because ORM/ODM-type libraries tend to cause as many problems as they solve, Modinha aims to separate model logic from persistence. The primary goal is to make it easy to write runtime swappable custom backends at the driver level, without having to entirely sacrifice the benefits that higher-level model code provides. Defining the backend for models at runtime rather than hard coding them with specific adapters supports running unit tests against an in-memory backend to keep large unit test suites running fast, while selecting a "real" backend for integration tests and deployment. This feature should also make migrating from one backend to another much less painful.
+Modinha is a toolkit for creating persisted models. This is for programmers who like to work from the bottom up, building up persistence code from low level drivers, such as node_redis. Modinha provides:
+
+* Schema-based validation
+* Model inheritance
+* Model extension (mixins)
+* Literal and functional default value definition
+* Private value protection
+* Selection (initialize a subset of an object)
+* Mapping (initialize an object from a different data model)
+* Optional null values (normalize empty query results)
+* More
+
+
 
 ### Installation and Usage
 
@@ -12,122 +24,111 @@ Modinha is a schema-based object modeling package for Node.js. Because ORM/ODM-t
 
     var Modinha = require('modinha');
 
-#### Extend.
+#### Define a model based on a schema
 
-Anything you want to add or override on the model or its prototype can be passed to extend.
-
-    var CLASSNAME = Modinha.extend(PROTOTYPE, STATIC);
-
-A schema must be defined for each model. By default, all schemas have a unique `_id` and timestamps. You can omit `_id` or the timestamps with static properties.
-
-    var M = Modinha.extend(null, {
-      schema: {
-        name: { type: 'string', required: true }
-      },
-      uniqueID: false,
-      timestamps: false
+    var Account = Modinha.define({
+      _id:      { type: 'string', default: Modinha.default.uuid },
+      name:     { type: 'string' },
+      email:    { type: 'string', required: true, format: 'email' },
+      hash:     { type: 'string', required: true, private: true },
+      created:  { type: 'string', default: Modinha.default.timestamp, format: 'utc-millisec' }
     });
 
-You can also set a different property as the unique id.
+#### Create an instance
 
-    var M = Modinha.extend(null, {
-      schema: { other: { type: 'string', required: true } },
-      uniqueID: 'other'
-    });    
+    var account = new Account({ email: 'john@smith.com' }, options);
 
-Schema properties can have default values, which can be a literal value or a function that generates a value.
 
-    var M = Modinha.extend(null, {
-      schema: {
-        color: { 
-          type: 'string', 
-          enum: ['blue', 'green' ], 
-          default: 'blue' 
-        },
-        secret: { 
-          type: 'string', 
-          default: function () { 
-            return Math.random(); 
-          } 
-        }
+#### Augment the model
+
+This model can be easily augmented with static and prototype methods.
+
+    Account.create = function (data, options, callback) {
+      if (!callback) {
+        callback = options;
+        options = {};    
       }
-    });
-
-Modinha defines a property for common default functions. At the moment there's a random string generator. More to come...
-
-    var M = Modinha.extend(null, {
-      schema: {
-        secret: { type: 'string', default: Modinha.defaults.random }
+      
+      var account = new Account(data, options)
+        , validation = account.validate()
+        , timestamp = Date.now()
+        ;
+      
+      account.created = timestamp;
+      account.modified = timestamp;
+      
+      if (!validation.valid) { 
+        return callback(validation); 
       }
-    });
+      
+      // store the account data
+      // maintain a sorted set of account ids
+      // maintain a secondary index by email
+      client.multi()
+        .hset('accounts', account._id, JSON.stringify(account))    
+        .zadd('accounts:id', timestamp, account._id)               
+        .hset('accounts:email', account.email, account._id)        
+        .exec(function (err) {
+          if (err) { return callback(err); }
+          callback(null, account);
+        });
+    }
+
+#### Extend the model
+
+Pass in a "class" (constructor) or explicit prototype and static augmentations.
+
+    Model.extend(SomethingToMixin)
+    Model.extend(proto, static);
+
+#### Inherit from a model
+
+    var Admin = Account.inherit(proto, static);
+
+#### Initializing Objects
+
+    new Account(data, options);
+    
+    Account.initialize()
+    Account.initialize({ email: 'john@example.com' })
+    Account.initialize({ _id: '...', email: 'john@example.com' })
+    Account.initialize({ hacker: 'p0wn3d' })
+    Account.initialize({ hash: 'secret', ... }, { private: true })
+    Account.initialize(undefined, { nullify: true })
+    
+    
+#### Mappings
+
+Pass a mapping in the options.
+
+    Account.initialize({ facebook: { bs: {}, id: '...' } }, { map: { '_id': 'facebook.id' } })
+
+Or predefine named mappings:
+
+    Account.maps.facebook = {
+      '_id': 'facebook.id'
+    };
+
+    Account.initialize(fbData, { map: 'facebook' });
 
 
-#### CRUD
+#### Selections
 
-Models have CRUD-like static methods.
+Get a subset of an object.
 
-    var User = Modinha.extend(null, {
-      schema: {
-        name:  { type: 'string' },
-        email: { type: 'string', required: true, format: 'email' }
-      }
-    });
-
-    User.create({ email: 'valid@example.com' }, function (err, user) {
-      console.log(user);
-    });
-
-    User.find({ _id: '384850302' }, function (err, user) {
-      console.log(user);
-    });
-
-    User.update({ email: 'initial@example.com' }, 
-                { name: 'Updated', email: 'updated@example.com' },
-                function (err, user) {
-                  console.log(user);
-                });
-
-    User.destroy({ name: 'Gladiator' }, function (err) {
-      console.log('R.I.P.')
-    });
+    Account.initialize({...}, { select: ['name', 'email'] })
 
 
-#### Hooks
+#### Validation
 
-Perform asynchronous model-specific operations before validating or creating instances.
+Validate an uninitialized object against the model's schema.
 
-    var Widget = Modinha.extend(null, { schema: { name: { type: 'string' } } });
+    Account.validate({...})
 
-    Widget.before('create', function (instance, attrs, callback) {
-      instance.name += ' widget';
-      callback(null);
-    });
+Validate an instance.
 
-    Widget.before('validate', function (instance, attrs, callback) {
-      instance.foo = 'bar';
-      callback(null);
-    });
-
-Another example, with a completion hook. Here we expose a value without storing it.
-
-    Client.before('create', function (client, attrs, callback) {
-      Credentials.create({ role: 'client' }, function (err, credentials) {
-        if (err) { return callback(err); }
-        client.key = credentials.key;
-        callback(null, credentials);
-      });
-    });
-
-    Client.before('complete', function (client, attrs, result, callback) {
-      var credentials = result.beforeCreate[0];
-      client.secret = credentials.secret;
-      callback(null);
-    });
-
-
-## Persistence
-
-Modinha uses an in-memory backend by default. This works like a mock backend for testing and simplifies initial stages of development. Adapters for a few different data stores are planned, including Redis, Riak, and MongoDB. You can also write your own adapters fairly easily. Look at the [JSONFile](https://github.com/christiansmith/ModinhaJSONFile) backend for an example.
+    var account = new Account({...})
+      , validation = account.validate()
 
 
 ## The MIT License
