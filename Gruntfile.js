@@ -9,17 +9,19 @@ module.exports = function (grunt) {
       test: {
         files: [
           'lib/**/*.js',
-          'test/**/*.js'
+          //'test/**/*.js',
+          'test/**/*.coffee'
         ],
         tasks: ['mochacov']
       }
     },
     mochacov: {
       options: {
-        reporter: 'spec'
+        reporter: 'spec',
+        compilers: ['coffee:coffee-script']
       },
       all: [
-        'test/**/*.js'
+        'test/**/*.coffee'
       ]
     }
   });
