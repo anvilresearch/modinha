@@ -108,7 +108,15 @@ Or predefine named mappings:
 
 Get a subset of an object.
 
-    Account.initialize({...}, { select: ['name', 'email'] })
+    Account.initialize({...}, { select: ['name', 'email'] });
+
+
+#### Merging objects
+
+Merge works identical to initialize, except that it mutates an existing instance instead of creating a new one.
+
+    var account = new Account({...});
+    account.merge(data, { map: 'facebook' });
 
 
 #### Augment the model
