@@ -351,17 +351,50 @@ describe 'Modinha', ->
 
 
 
-  describe 'instance update', ->
+  describe 'instance merge', ->
 
     describe 'with no options', ->
-      it 'should set properties defined in the schema'
-      it 'should not overwrite values with undefined?'
+
+      before ->
+        instance = new Model { q: 'q', s: { t: 't' } }
+        instance.merge { q: 'qq', s: { t: 'tt' }, hacker: 'p0wn3d' }
+
+      it 'should set properties defined in the schema', ->
+        instance.q.should.equal 'qq'
+        instance.s.t.should.equal 'tt'
+
+      it 'should ignore properties not defined in the schema', ->
+        expect(instance.hacker).to.be.undefined
+
 
     describe 'with map option', ->
-      it 'should update an object from a literal mapping'
-      it 'should update an object from a named mapping'
-      it 'should set properties defined in the map'
-      it 'should ignore properties not defined in the map'      
+
+      beforeEach ->
+
+        instance = new Model { q: 'q', s: { t: 't' } }
+
+        data = 
+          n: 'qq'
+          m: { s: { t: 'tt' } }
+          hacker: 'p0wn3d'
+    
+        map = 
+          'q'   : 'n'
+          's.t' : 'm.s.t'
+
+      it 'should update an object from a literal mapping', ->
+        instance.merge data, map: map  
+        instance.q.should.equal 'qq'
+        instance.s.t.should.equal 'tt'        
+
+      it 'should update an object from a named mapping', ->
+        instance.merge data, map: 'named'  
+        instance.q.should.equal 'qq'
+        instance.s.t.should.equal 'tt'    
+
+      it 'should ignore properties not defined in the map', ->
+        instance.merge data, map: map 
+        expect(instance.hacker).to.be.undefined   
 
 
 
