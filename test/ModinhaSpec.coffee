@@ -165,7 +165,16 @@ describe 'Modinha', ->
 
   describe 'serialize', ->
 
+    it 'should generate JSON', ->
+      Model.serialize({ foo: 'bar' }).should.equal(JSON.stringify({ foo: 'bar' }))
+
   describe 'deserialize', ->
+
+    it 'should parse JSON', ->
+      Model.deserialize('{ "foo": "bar" }').foo.should.equal 'bar'
+
+    it 'should catch parsing errors', ->
+      expect(-> Model.deserialize('{badjson}')).to.throw Error
 
 
 
