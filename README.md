@@ -119,40 +119,29 @@ Merge works identical to initialize, except that it mutates an existing instance
     account.merge(data, { map: 'facebook' });
 
 
+#### Serialization and deserialization
+
+By default, Modinha models serialize and deserialize JSON. These methods can be overridden to store data in a different format. For example, we might want to use [MessagePack](http://msgpack.org/) or [CSV](https://tools.ietf.org/html/rfc4180), or perhaps compress the data with [snappy](https://code.google.com/p/snappy/).
+
+      Account.serialize = function (object) {
+        return msgpack.pack(object);
+      };
+
+      Account.deserialize = function (data) {
+        return msgpack.unpack(data);
+      };
+
 #### Augment the model
 
 This model can be easily augmented with static and prototype methods.
 
     Account.create = function (data, options, callback) {
-      if (!callback) {
-        callback = options;
-        options = {};    
-      }
-      
-      var account = new Account(data, options)
-        , validation = account.validate()
-        , timestamp = Date.now()
-        ;
-      
-      account.created = timestamp;
-      account.modified = timestamp;
-      
-      if (!validation.valid) { 
-        return callback(validation); 
-      }
-      
-      // store the account data
-      // maintain a sorted set of account ids
-      // maintain a secondary index by email
-      client.multi()
-        .hset('accounts', account._id, JSON.stringify(account))    
-        .zadd('accounts:id', timestamp, account._id)               
-        .hset('accounts:email', account.email, account._id)        
-        .exec(function (err) {
-          if (err) { return callback(err); }
-          callback(null, account);
-        });
-    }
+      // ...
+    };
+
+    Account.prototype.save = function (data, options, callback) {
+      // ...
+    };
 
 When a model requires many methods that are general and identical to other models, duplication can be avoided by extending the model with mixins.
 
