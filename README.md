@@ -35,6 +35,10 @@ Modinha is a toolkit for creating persisted models. This is for programmers who 
       created:  { type: 'string', default: Modinha.default.timestamp, format: 'utc-millisec' }
     });
 
+`Modinha.define()` optionally takes a collection name as the first argument and will assign the value of that argument to the new model's static `collection` property.
+
+    Modinha.define('accounts', schema);
+
 
 #### Create an instance
 
