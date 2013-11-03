@@ -11,7 +11,7 @@
     "type": "git",
     "url": "https://github.com/christiansmith/Modinha.git"
   },
-  "main": "./lib/Model.js",
+  "main": "./lib/Modinha.js",
   "license": "MIT",
   "devDependencies": {
     "grunt-contrib-watch": "~0.5.3",

@@ -163,7 +163,14 @@ describe 'Modinha', ->
 
 
 
-  describe 'instance initialization', ->
+  describe 'serialize', ->
+
+  describe 'deserialize', ->
+
+
+
+
+  describe 'instance initialization (merge)', ->
 
     describe 'without data', ->
 
@@ -256,6 +263,7 @@ describe 'Modinha', ->
 
 
 
+
   describe 'static initialization', ->
     
     describe 'without data', ->
@@ -324,6 +332,18 @@ describe 'Modinha', ->
         ]).forEach (instance) ->
           expect(instance).to.be.instanceof Model    
 
+
+    describe 'with an array and "first" option', ->
+
+      it 'should return the first instance', ->
+        instance = Model.initialize([{}, {}, {}], { first: true })
+        Array.isArray(instance).should.be.false
+        expect(instance).to.be.instanceof Model
+
+
+    describe 'with functional options', ->
+      it 'should map over instances'
+      it 'should return a filtered set of instances'
 
 
 
