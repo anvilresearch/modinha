@@ -69,7 +69,11 @@ describe 'Modinha', ->
       instance = new DefinedModel    
       expect(instance).to.be.an.instanceof Modinha
 
-  
+    it 'should optionally assign a collection', ->
+      DefinedModel = Modinha.define 'collection', Model.schema
+      DefinedModel.collection.should.equal 'collection'
+
+
 
 
   describe 'model inheritance', ->
@@ -474,7 +478,7 @@ describe 'Modinha', ->
 
   describe 'state machine', ->  
 
-    it 'should add a "state" property to the schema'
+    it 'should add a "state" property to the schema?'
     it 'should enumerate states'
     it 'should define transitions'
     it 'should guard transitions'
