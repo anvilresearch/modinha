@@ -33,7 +33,7 @@ describe 'Modinha', ->
         },
         v:          { type: 'string', default: -> 'generated' },
         w:          { type: 'string', private: true },
-        uuid:       { type: 'string', default: Modinha.defaults.uuid, format: 'uuid' },
+        uuid:       { type: 'string', default: Modinha.defaults.uuid, format: 'uuid', uniqueId: true },
         random:     { type: 'string', default: Modinha.defaults.random(12) }
         timestamp:  { type: 'number', default: Modinha.defaults.timestamp }
         short:      { type: 'string', maxLength: 6 }
@@ -83,6 +83,9 @@ describe 'Modinha', ->
 
     it 'should require a schema', ->
       expect(-> Modinha.inherit()).to.throw Modinha.UndefinedSchemaError
+
+    it 'should override default uniqueId', ->
+      Model.uniqueId.should.equal 'uuid'
 
     it 'should set new prototype properties on the subclass', ->
       instance.a.should.equal 'a'
@@ -360,6 +363,7 @@ describe 'Modinha', ->
 
 
 
+
   describe 'default', ->
 
     describe 'random', ->
@@ -430,6 +434,11 @@ describe 'Modinha', ->
         expect(instance.hacker).to.be.undefined   
 
 
+    describe 'with project option', ->
+
+      it 'should intialize an object that differs from the schema'
+
+
 
 
   describe 'instance validation', ->
@@ -472,6 +481,26 @@ describe 'Modinha', ->
 
       it 'should return a ValidationError', ->
         expect(validation).to.be.instanceof Modinha.ValidationError
+
+
+
+
+  describe 'hook definition', ->
+
+    describe 'before', ->
+
+      it 'should register the hook for an event'
+      it 'should wrap the hood in async.apply'
+
+    describe 'after', ->
+
+      it 'should register the hook for an event'
+      it 'should wrap the hood in async.apply'
+
+
+  describe 'hook application', ->
+
+    it 'should invoke each hook for an event'
 
 
 

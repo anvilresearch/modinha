@@ -5,6 +5,7 @@ Modinha is a toolkit for creating persisted models. This is for programmers who 
 * Schema-based validation
 * Model inheritance
 * Model extension (mixins)
+* Flexible serialization/deserialization
 * Literal and functional default value definition
 * Private value protection
 * Selection (initialize a subset of an object)
@@ -19,6 +20,7 @@ Modinha is a toolkit for creating persisted models. This is for programmers who 
 #### Install
 
     $ npm install modinha
+
 
 #### Require
 
@@ -135,6 +137,7 @@ By default, Modinha models serialize and deserialize JSON. These methods can be 
         return msgpack.unpack(data);
       };
 
+
 #### Augment the model
 
 This model can be easily augmented with static and prototype methods.
@@ -156,6 +159,7 @@ Pass in a "class" (constructor) or explicit prototype and static augmentations.
 
     Model.extend(SomethingToMixin)
     Model.extend(proto, static);
+
 
 #### Inherit from a model
 
