@@ -8,7 +8,7 @@ chai.should()
 describe 'Modinha', ->
 
 
-  {Model,instance,validation,data,map} = {}
+  {Model,instance,validation,data,map,projection} = {}
 
 
   before ->
@@ -436,7 +436,23 @@ describe 'Modinha', ->
 
     describe 'with project option', ->
 
-      it 'should intialize an object that differs from the schema'
+      beforeEach ->
+
+        data = 
+          q: 'q'
+          s:
+            t: 't'
+    
+        projection = 
+          'q'   : 'n'
+          's.t' : 'm.s.t'
+
+
+      it 'should intialize an object that differs from the schema', ->
+        instance = Model.initialize data
+        object = Modinha.project instance, {}, projection
+        object.n.should.equal 'q'
+        object.m.s.t.should.equal 't'
 
 
 
