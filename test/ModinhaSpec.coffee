@@ -8,7 +8,7 @@ chai.should()
 describe 'Modinha', ->
 
 
-  {Model,instance,validation,data,map,projection} = {}
+  {Model,instance,validation,data,mapping,projection} = {}
 
 
   before ->
@@ -25,11 +25,11 @@ describe 'Modinha', ->
       schema: {
         q:          { type: 'string' },
         r:          { type: 'boolean', default: true },
-        s: { 
-          properties: { 
+        s: {
+          properties: {
             t:      { type: 'string' },
             u:      { type: 'boolean', default: true }
-          } 
+          }
         },
         v:          { type: 'string', default: -> 'generated' },
         w:          { type: 'string', private: true },
@@ -40,7 +40,7 @@ describe 'Modinha', ->
       }
     })
 
-    Model.maps.named = 
+    Model.mappings.named =
       'q'   : 'n'
       's.t' : 'm.s.t'
 
@@ -66,7 +66,7 @@ describe 'Modinha', ->
 
     it 'should inherit the model from Modinha', ->
       DefinedModel = Modinha.define Model.schema
-      instance = new DefinedModel    
+      instance = new DefinedModel
       expect(instance).to.be.an.instanceof Modinha
 
     it 'should optionally assign a collection', ->
@@ -100,10 +100,10 @@ describe 'Modinha', ->
       Model.b.should.equal 'b'
 
     it 'should set the prototype\'s constructor', ->
-      Model.prototype.constructor.should.equal(Model);
+      Model.prototype.constructor.should.equal Model
 
     it 'should set the superclass\' prototype', ->
-      Model.superclass.should.equal(Modinha.prototype);
+      Model.superclass.should.equal Modinha.prototype
 
 
 
@@ -197,7 +197,7 @@ describe 'Modinha', ->
 
       it 'should set defaults defined by function', ->
         instance = new Model
-        instance.v.should.equal 'generated'    
+        instance.v.should.equal 'generated'
 
 
     describe 'with data', ->
@@ -233,34 +233,34 @@ describe 'Modinha', ->
 
       it 'should set private values', ->
         instance = new Model { w: 'secret' }, { private: true }
-        instance.w.should.equal 'secret'  
+        instance.w.should.equal 'secret'
 
 
-    describe 'with map option', ->
+    describe 'with mapping option', ->
 
       before ->
-        data = 
+        data =
           n: 'q'
           m: { s: { t: 't' } }
           hacker: 'p0wn3d'
     
-        map = 
+        mapping =
           'q'   : 'n'
           's.t' : 'm.s.t'
 
-        instance = new Model data, map: map   
+        instance = new Model data, mapping: mapping
 
       it 'should initialize an object from a literal mapping', ->
         instance.q.should.equal 'q'
         instance.s.t.should.equal 't'
 
       it 'should initialize an object from a named mapping', ->
-        instance = new Model data, map: 'named'
+        instance = new Model data, mapping: 'named'
         instance.q.should.equal 'q'
         instance.s.t.should.equal 't'
 
       it 'should ignore properties not defined in the map', ->
-        expect(instance.hacker).to.be.undefined 
+        expect(instance.hacker).to.be.undefined
 
 
     describe 'with select option', ->
@@ -304,8 +304,8 @@ describe 'Modinha', ->
 
       it 'should provide an instance of the model', ->
         instance = Model.initialize { q: 'qwerty' }
-        expect(instance).to.be.instanceof Model 
-        instance.q.should.equal 'qwerty' 
+        expect(instance).to.be.instanceof Model
+        instance.q.should.equal 'qwerty'
 
 
     describe 'with array data', ->
@@ -323,8 +323,8 @@ describe 'Modinha', ->
 
       it 'should provide an instance of the model', ->
         instance = Model.initialize '{ "q": "qwerty" }'
-        expect(instance).to.be.instanceof Model 
-        instance.q.should.equal 'qwerty'         
+        expect(instance).to.be.instanceof Model
+        instance.q.should.equal 'qwerty'
     
 
     describe 'with JSON array data', ->
@@ -346,7 +346,7 @@ describe 'Modinha', ->
           '{ "q": "second" }',
           '{ "q": "third" }'
         ]).forEach (instance) ->
-          expect(instance).to.be.instanceof Model    
+          expect(instance).to.be.instanceof Model
 
 
     describe 'with an array and "first" option', ->
@@ -410,40 +410,40 @@ describe 'Modinha', ->
 
         instance = new Model { q: 'q', s: { t: 't' } }
 
-        data = 
+        data =
           n: 'qq'
           m: { s: { t: 'tt' } }
           hacker: 'p0wn3d'
     
-        map = 
+        mapping =
           'q'   : 'n'
           's.t' : 'm.s.t'
 
       it 'should update an object from a literal mapping', ->
-        instance.merge data, map: map  
+        instance.merge data, mapping: mapping
         instance.q.should.equal 'qq'
-        instance.s.t.should.equal 'tt'        
+        instance.s.t.should.equal 'tt'
 
       it 'should update an object from a named mapping', ->
-        instance.merge data, map: 'named'  
+        instance.merge data, mapping: 'named'
         instance.q.should.equal 'qq'
-        instance.s.t.should.equal 'tt'    
+        instance.s.t.should.equal 'tt'
 
       it 'should ignore properties not defined in the map', ->
-        instance.merge data, map: map 
-        expect(instance.hacker).to.be.undefined   
+        instance.merge data, mapping: mapping
+        expect(instance.hacker).to.be.undefined
 
 
     describe 'with project option', ->
 
       beforeEach ->
 
-        data = 
+        data =
           q: 'q'
           s:
             t: 't'
     
-        projection = 
+        projection =
           'q'   : 'n'
           's.t' : 'm.s.t'
 
@@ -521,7 +521,7 @@ describe 'Modinha', ->
 
 
 
-  describe 'state machine', ->  
+  describe 'state machine', ->
 
     it 'should add a "state" property to the schema?'
     it 'should enumerate states'
