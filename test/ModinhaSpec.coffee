@@ -157,6 +157,19 @@ describe 'Modinha', ->
         Model.c.should.equal 'cc'
 
 
+    describe 'with post extend hook', ->
+
+      before ->
+        class PostExtension
+          @__postExtend: ->
+            @schema.foo = { type: 'string', default: 'bar' }
+
+        Model.extend PostExtension
+        instance = new Model
+
+      it 'should invoke the hook to mutate the model', ->
+        instance.foo.should.equal 'bar'
+
 
 
   describe 'instance', ->
