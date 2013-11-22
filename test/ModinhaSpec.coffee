@@ -241,6 +241,8 @@ describe 'Modinha', ->
         instance = new Model w: 'secret'
         expect(instance.w).to.be.undefined
 
+      it 'should not overwrite immutable values'
+
 
     describe 'with private values option', ->
 
@@ -289,6 +291,29 @@ describe 'Modinha', ->
         expect(instance.q).to.be.undefined
 
       it 'should generate default values if selected'
+
+
+
+
+  describe 'instance projection', ->
+
+    before ->
+      instance = new Model q: 'q', s: { t: 't' }
+  
+      mapping =
+        'q'   : 'n'
+        's.t' : 'm.s.t'
+
+      data = instance.project(mapping)
+
+    it 'should initialize a new object from a literal mapping', ->
+      data.n.should.equal 'q'
+      data.m.s.t.should.equal 't'
+
+    it 'should initialize a new object from a named mapping', ->
+      data = instance.project 'named'
+      data.n.should.equal 'q'
+      data.m.s.t.should.equal 't'
 
 
 
