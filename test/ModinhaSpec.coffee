@@ -293,6 +293,15 @@ describe 'Modinha', ->
       it 'should generate default values if selected'
 
 
+    describe 'without default values', ->
+
+      before ->
+        instance = new Model {}, { defaults: false }
+
+      it 'should not initialize default values', ->
+        expect(instance.r).to.be.undefined
+        expect(instance.s.u).to.be.undefined
+        expect(instance.v).to.be.undefined
 
 
   describe 'instance projection', ->
