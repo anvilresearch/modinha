@@ -1,12 +1,12 @@
 {
   "name": "modinha",
-  "description": "Modinha is a model abstraction similar to an ORM or ODM, that aims to separate data modeling and persistence.",
+  "description": "Modinha is a toolkit for creating persisted models in Nodejs.",
   "author": {
     "name": "Christian Smith",
     "email": "smith@anvil.io",
     "url": "http://anvil.io"
   },
-  "version": "0.0.18",
+  "version": "0.0.19",
   "repository": {
     "type": "git",
     "url": "https://github.com/christiansmith/Modinha.git"
@@ -19,7 +19,6 @@
     "grunt-mocha-cov": "0.0.7",
     "chai": "~1.7.2",
     "grunt-release": "~0.5.1",
-    "modinha-json": "0.0.4",
     "coffee-script": "~1.6.3"
   },
   "dependencies": {
