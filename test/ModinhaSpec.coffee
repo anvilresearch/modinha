@@ -37,6 +37,9 @@ describe 'Modinha', ->
         random:     { type: 'string', default: Modinha.defaults.random(12) }
         timestamp:  { type: 'number', default: Modinha.defaults.timestamp }
         short:      { type: 'string', maxLength: 6 }
+        indirect:   { type: 'string', set: ((data) -> "indirect#{data.indirect}"), after: ((data) -> @after = "after#{@indirect}") }
+        after:      { type: 'string' }
+        immutable:  { type: 'string', immutable: true }
       }
     })
 
@@ -233,6 +236,14 @@ describe 'Modinha', ->
         instance = new Model q: 'q'
         instance.v.should.equal 'generated'
 
+      it 'should invoke setter', ->
+        instance = new Model indirect: 'value'
+        instance.indirect.should.equal 'indirectvalue'
+
+      it 'should invoke after', ->
+        instance = new Model indirect: 'value'
+        instance.after.should.equal 'afterindirectvalue'
+
       it 'should override default properties with provided data', ->
         instance = new Model r: false
         instance.r.should.be.false
@@ -241,7 +252,10 @@ describe 'Modinha', ->
         instance = new Model w: 'secret'
         expect(instance.w).to.be.undefined
 
-      it 'should not overwrite immutable values'
+      it 'should set immutable values', ->
+        instance = new Model immutable: 'cannot change'
+        instance.immutable = 'changed'
+        instance.immutable.should.equal 'cannot change'
 
 
     describe 'with private values option', ->
@@ -544,26 +558,6 @@ describe 'Modinha', ->
 
       it 'should return a ValidationError', ->
         expect(validation).to.be.instanceof Modinha.ValidationError
-
-
-
-
-  describe 'hook definition', ->
-
-    describe 'before', ->
-
-      it 'should register the hook for an event'
-      it 'should wrap the hood in async.apply'
-
-    describe 'after', ->
-
-      it 'should register the hook for an event'
-      it 'should wrap the hood in async.apply'
-
-
-  describe 'hook application', ->
-
-    it 'should invoke each hook for an event'
 
 
 
