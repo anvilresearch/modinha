@@ -37,7 +37,7 @@ describe 'Modinha', ->
         random:     { type: 'string', default: Modinha.defaults.random(12) }
         timestamp:  { type: 'number', default: Modinha.defaults.timestamp }
         short:      { type: 'string', maxLength: 6 }
-        indirect:   { type: 'string', set: ((data) -> "indirect#{data.indirect}"), after: ((data) -> @after = "after#{@indirect}") }
+        indirect:   { type: 'string', set: ((data) -> @indirect = "indirect#{data.indirect}"), after: ((data) -> @after = "after#{@indirect}") }
         after:      { type: 'string' }
         immutable:  { type: 'string', immutable: true }
       }
@@ -455,7 +455,7 @@ describe 'Modinha', ->
 
       before ->
         instance = new Model { q: 'q', s: { t: 't' } }
-        instance.merge { q: 'qq', s: { t: 'tt' }, hacker: 'p0wn3d' }
+        instance.initialize { q: 'qq', s: { t: 'tt' }, hacker: 'p0wn3d' }
 
       it 'should set properties defined in the schema', ->
         instance.q.should.equal 'qq'
@@ -481,17 +481,17 @@ describe 'Modinha', ->
           's.t' : 'm.s.t'
 
       it 'should update an object from a literal mapping', ->
-        instance.merge data, mapping: mapping
+        instance.initialize data, mapping: mapping
         instance.q.should.equal 'qq'
         instance.s.t.should.equal 'tt'
 
       it 'should update an object from a named mapping', ->
-        instance.merge data, mapping: 'named'
+        instance.initialize data, mapping: 'named'
         instance.q.should.equal 'qq'
         instance.s.t.should.equal 'tt'
 
       it 'should ignore properties not defined in the map', ->
-        instance.merge data, mapping: mapping
+        instance.initialize data, mapping: mapping
         expect(instance.hacker).to.be.undefined
 
 

@@ -19,7 +19,9 @@
     "grunt-mocha-cov": "0.0.7",
     "chai": "~1.7.2",
     "grunt-release": "~0.5.1",
-    "coffee-script": "~1.6.3"
+    "coffee-script": "~1.6.3",
+    "sinon-chai": "~2.4.0",
+    "sinon": "~1.7.3"
   },
   "dependencies": {
     "underscore": "~1.5.1",
