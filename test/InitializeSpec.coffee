@@ -36,7 +36,7 @@ describe 'traverse', ->
       b: 'b',
       c: { d: 'd' }
     }
-    target = {}  
+    target = {}
 
   it 'should traverse schema and source objects', ->
     operation = sinon.spy()
@@ -119,7 +119,7 @@ describe 'assign', ->
 
 
 describe 'map', ->
-  
+
   {mapping,source,target} = {}
 
   beforeEach ->
@@ -130,7 +130,8 @@ describe 'map', ->
 
     mapping =
       'q'   : 'a'
-      'r.s' : 'b.c.d'  
+      'r.s' : 'b.c.d'
+      'n'   : (src) -> Object.keys(src).length
 
     target = {}
 
@@ -138,7 +139,8 @@ describe 'map', ->
     map(mapping, source, target)
     target.q.should.equal 'a'
     target.r.s.should.equal 'e'
-    
+    target.n.should.equal 3
+
   it 'should ignore properties of the source not defined in the mapping', ->
     map(mapping, source, target)
     expect(target.f).to.be.undefined
@@ -168,7 +170,7 @@ describe 'select', ->
     target.b.c.d.should.equal 'e'
 
   it 'should ignore properties not defined in the properties', ->
-    select(properties, source, target)  
+    select(properties, source, target)
     expect(target.f).to.be.undefined
 
 
