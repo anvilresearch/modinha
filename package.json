@@ -11,6 +11,9 @@
     "type": "git",
     "url": "https://github.com/christiansmith/Modinha.git"
   },
+  "scripts": {
+    "test": "grunt test"
+  },
   "main": "./lib/Modinha.js",
   "license": "MIT",
   "devDependencies": {
