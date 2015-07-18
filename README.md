@@ -124,6 +124,11 @@ Merge works identical to initialize, except that it mutates an existing instance
     var account = new Account({...});
     account.merge(data, { map: 'facebook' });
 
+Explicitly setting a property on an object to undefined will mark that property for deletion. For example,
+
+    var account = new Account({ ssn: '123-456-7890' });
+    account.merge({ ssn: undefined });
+
 
 #### Serialization and deserialization
 
