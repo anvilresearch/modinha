@@ -124,10 +124,10 @@ Merge works identical to initialize, except that it mutates an existing instance
     var account = new Account({...});
     account.merge(data, { map: 'facebook' });
 
-Explicitly setting a property on an object to undefined will mark that property for deletion. For example,
+If you would like to delete a property off of an object, then set the `$unset` operator on the options object to an array with the list of property names you would like to delete. For example,
 
     var account = new Account({ ssn: '123-456-7890' });
-    account.merge({ ssn: undefined });
+    account.merge({}, { $unset: [ 'ssn' ] });
 
 
 #### Serialization and deserialization
