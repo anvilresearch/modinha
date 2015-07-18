@@ -65,6 +65,8 @@ describe 'assign', ->
     descriptors =
       simple:    { type: 'string' }
       private:   { type: 'string', private: true }
+      deleted:   { type: 'string' }
+      exists:    { type: 'string' }
       immutable: { type: 'string', immutable: true }
       setter:    { type: 'string', set: (data) -> @setter = "#{data.setter}ter" }
       default:   { type: 'string', default: 'default' }
@@ -72,16 +74,28 @@ describe 'assign', ->
       after:     { type: 'string', after: (data) -> @setAfter = "#{data.after} assignment"}
     source =
       simple: 'simple'
+      deleted: undefined
       private: 'private'
       immutable: 'immutable'
       setter: 'set'
       after: 'after'
-    target = {}
+    target =
+      deleted: 'not deleted'
+      exists:  'exists'
     options = {}
 
   it 'should set a property on target from source', ->
     assign('simple', descriptors.simple, source, target, options)
     target.simple.should.equal 'simple'
+
+  it 'should remove target properties explicitly undefined on source', ->
+    assign('deleted', descriptors.deleted, source, target, options)
+    target.should.not.have.property('deleted')
+
+  it 'should not delete target properties not defined on source', ->
+    assign('exists', descriptors.exists, source, target, options)
+    target.should.have.property('exists')
+    target.exists.should.equal 'exists'
 
   it 'should skip private properties by default', ->
     assign('private', descriptors.private, source, target, options)
