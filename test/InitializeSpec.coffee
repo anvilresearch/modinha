@@ -74,7 +74,7 @@ describe 'assign', ->
       after:     { type: 'string', after: (data) -> @setAfter = "#{data.after} assignment"}
     source =
       simple: 'simple'
-      deleted: undefined
+      deleted: 'boogers'
       private: 'private'
       immutable: 'immutable'
       setter: 'set'
@@ -82,17 +82,17 @@ describe 'assign', ->
     target =
       deleted: 'not deleted'
       exists:  'exists'
-    options = {}
+    options = { $unset: [ 'deleted' ] }
 
   it 'should set a property on target from source', ->
     assign('simple', descriptors.simple, source, target, options)
     target.simple.should.equal 'simple'
 
-  it 'should remove target properties explicitly undefined on source', ->
+  it 'should remove target properties marked for deletion with $unset', ->
     assign('deleted', descriptors.deleted, source, target, options)
     target.should.not.have.property('deleted')
 
-  it 'should not delete target properties not defined on source', ->
+  it 'should keep target properties not marked for deletion with $unset', ->
     assign('exists', descriptors.exists, source, target, options)
     target.should.have.property('exists')
     target.exists.should.equal 'exists'
