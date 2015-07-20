@@ -258,6 +258,16 @@ describe 'Modinha', ->
         instance.immutable.should.equal 'cannot change'
 
 
+    describe 'with $unset operator', ->
+
+      it 'should delete specified properties', ->
+        instance = new Model { q: 'not deleted' }
+        instance.should.have.property 'q'
+        instance.q.should.equal 'not deleted'
+        instance.merge { }, { $unset: [ 'q' ] }
+        instance.should.not.have.property 'q'
+
+
     describe 'with private values option', ->
 
       it 'should set private values', ->
