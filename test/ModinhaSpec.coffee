@@ -1,4 +1,5 @@
 Modinha = require '../lib/Modinha'
+ModelCollection = require '../lib/ModelCollection'
 
 chai = require 'chai'
 expect = chai.expect
@@ -80,7 +81,7 @@ describe 'Modinha', ->
 
 
   describe 'model inheritance', ->
-    
+
     before ->
       instance = new Model
 
@@ -282,7 +283,7 @@ describe 'Modinha', ->
           n: 'q'
           m: { s: { t: 't' } }
           hacker: 'p0wn3d'
-    
+
         mapping =
           'q'   : 'n'
           's.t' : 'm.s.t'
@@ -332,7 +333,7 @@ describe 'Modinha', ->
 
     before ->
       instance = new Model q: 'q', s: { t: 't' }
-  
+
       mapping =
         'q'   : 'n'
         's.t' : 'm.s.t'
@@ -352,7 +353,7 @@ describe 'Modinha', ->
 
 
   describe 'static initialization', ->
-    
+
     describe 'without data', ->
 
       it 'should provide an instance of the model', ->
@@ -396,27 +397,31 @@ describe 'Modinha', ->
         instance = Model.initialize '{ "q": "qwerty" }'
         expect(instance).to.be.instanceof Model
         instance.q.should.equal 'qwerty'
-    
+
 
     describe 'with JSON array data', ->
 
-      it 'should provide an array of model instances', ->
-        Model.initialize('''[
+      it 'should provide a ModelCollection of model instances', ->
+        models = Model.initialize('''[
           { "q": "first" },
           { "q": "second" },
           { "q": "third" }
-        ]''').forEach (instance) ->
+        ]''')
+        expect(models).to.be.instanceof ModelCollection
+        models.forEach (instance) ->
           expect(instance).to.be.instanceof Model
 
 
     describe 'with an array of JSON object data', ->
 
-      it 'should provide an array of model instances', ->
-        Model.initialize([
+      it 'should provide a ModelCollection of model instances', ->
+        models = Model.initialize([
           '{ "q": "first" }',
           '{ "q": "second" }',
           '{ "q": "third" }'
-        ]).forEach (instance) ->
+        ])
+        expect(models).to.be.instanceof ModelCollection
+        models.forEach (instance) ->
           expect(instance).to.be.instanceof Model
 
 
@@ -485,7 +490,7 @@ describe 'Modinha', ->
           n: 'qq'
           m: { s: { t: 'tt' } }
           hacker: 'p0wn3d'
-    
+
         mapping =
           'q'   : 'n'
           's.t' : 'm.s.t'
@@ -513,7 +518,7 @@ describe 'Modinha', ->
           q: 'q'
           s:
             t: 't'
-    
+
         projection =
           'q'   : 'n'
           's.t' : 'm.s.t'
