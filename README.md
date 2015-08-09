@@ -61,8 +61,8 @@ Validate an instance.
 
 #### Initializing Objects
 
-Like the constructor, a model's static initialize method takes data and options arguments. 
-    
+Like the constructor, a model's static initialize method takes data and options arguments.
+
 With a null or undefined data argument, initialize will return an instance of the model with default values.
 
     Account.initialize()
@@ -93,8 +93,40 @@ Unlike the constructor, the static initialize method can also instantiate multip
     Account.initialize('{ "json": true }')
     Account.initialize('[{},{},{}]')
     Account.initialize(['{}', '{}'])
-    
-    
+
+#### Collections
+
+Running initialize against a set of objects will return a `ModelCollection`, an
+object which extends the Javascript Array object and provides Model-specific
+functionality that will apply across all the items in the collection.
+
+For example,
+
+    Account.initialize([{...},{...},{...}])
+
+will return a ModelCollection with three Account instances.
+
+Currently, the ModelCollection object only supports the `project` function,
+which can be used like so:
+
+    var accounts = Account.initialize([
+      { email: 'jane.doe@example.com' },
+      { email: 'ham.sandwich@example.com' },
+      { email: 'rosewater@example.com' }
+    ]);
+
+    var projections = accounts.project({
+      email: 'email_address'
+    });
+
+    // projections = [
+    //   { email_address: 'jane.doe@example.com' },
+    //   { email_address: 'ham.sandwich@example.com' },
+    //   { email_address: 'rosewater@example.com' }
+    // ]
+
+
+
 #### Mappings
 
 Pass a mapping in the options.
