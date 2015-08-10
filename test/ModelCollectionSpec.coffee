@@ -23,14 +23,14 @@ describe 'ModelCollection', ->
 
     it 'should inherit Array', ->
 
-      expect(new ModelCollection()).to.be.instanceof Array
+      expect(new ModelCollection()).to.be.an 'array'
 
 
   describe 'Constructor', ->
 
     it 'should retain a reference to the original model constructor', ->
 
-      fakeConstructor = {}
+      fakeConstructor = ->
 
       collection = new ModelCollection(fakeConstructor)
 
@@ -40,9 +40,10 @@ describe 'ModelCollection', ->
     it 'should call initialize for each object if data is provided', ->
 
       data = []
-      fakeConstructor =
-        initialize: (item) ->
-          data.push item
+      fakeConstructor = ->
+
+      fakeConstructor.initialize = (item) ->
+        data.push item
 
       new ModelCollection fakeConstructor, [1, 2, 3]
 
@@ -52,9 +53,10 @@ describe 'ModelCollection', ->
     it 'should pass options to initialize', ->
 
       options = 0
-      fakeConstructor =
-        initialize: (item, opts) ->
-          options = opts
+      fakeConstructor = ->
+
+      fakeConstructor.initialize = (item, opts) ->
+        options = opts
 
       new ModelCollection fakeConstructor, ['data'], 1
 
@@ -72,7 +74,10 @@ describe 'ModelCollection', ->
       mapping =
         a: 'aardvark'
 
-      fakeConstructor = { mappings: {}, initialize: -> }
+      fakeConstructor = ->
+
+      fakeConstructor.mappings = {}
+      fakeConstructor.initialize = ->
 
       Object.defineProperty fakeConstructor.mappings, 'map',
         get: ->
