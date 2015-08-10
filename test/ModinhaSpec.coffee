@@ -407,7 +407,8 @@ describe 'Modinha', ->
           { "q": "second" },
           { "q": "third" }
         ]''')
-        expect(models).to.be.instanceof ModelCollection
+        expect(models).to.be.an 'array'
+        expect(models.__model).to.equal Model
         models.forEach (instance) ->
           expect(instance).to.be.instanceof Model
 
@@ -420,7 +421,8 @@ describe 'Modinha', ->
           '{ "q": "second" }',
           '{ "q": "third" }'
         ])
-        expect(models).to.be.instanceof ModelCollection
+        expect(models).to.be.an 'array'
+        expect(models.__model).to.equal Model
         models.forEach (instance) ->
           expect(instance).to.be.instanceof Model
 
