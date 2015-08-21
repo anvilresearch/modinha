@@ -6,10 +6,17 @@
     "email": "smith@anvil.io",
     "url": "http://anvil.io"
   },
+  "contributors": [
+    {
+      "name": "Vartan Simonian",
+      "email": "vsimonianpress@gmail.com",
+      "url": "http://vsimonian.github.io/"
+    }
+  ],
   "version": "0.0.30",
   "repository": {
     "type": "git",
-    "url": "https://github.com/christiansmith/Modinha.git"
+    "url": "https://github.com/anvilresearch/modinha.git"
   },
   "scripts": {
     "test": "standard && grunt test"
@@ -34,6 +41,6 @@
     "underscore": "^1.5.1"
   },
   "bugs": {
-    "url": "https://github.com/christiansmith/Modinha/issues"
+    "url": "https://github.com/anvilresearch/modinha/issues"
   }
 }
