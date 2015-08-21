@@ -1,15 +1,14 @@
 module.exports = function (grunt) {
-
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-mocha-cov');
-  grunt.loadNpmTasks('grunt-release');
+  grunt.loadNpmTasks('grunt-contrib-watch')
+  grunt.loadNpmTasks('grunt-mocha-cov')
+  grunt.loadNpmTasks('grunt-release')
 
   grunt.initConfig({
     watch: {
       test: {
         files: [
           'lib/**/*.js',
-          //'test/**/*.js',
+          // 'test/**/*.js',
           'test/**/*.coffee'
         ],
         tasks: ['mochacov']
@@ -24,8 +23,8 @@ module.exports = function (grunt) {
         'test/**/*.coffee'
       ]
     }
-  });
+  })
 
-  grunt.registerTask('test', ['mochacov', 'watch:test']);
+  grunt.registerTask('test', ['mochacov', 'watch:test'])
 
-};
+}
