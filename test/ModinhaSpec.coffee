@@ -9,7 +9,7 @@ chai.should()
 describe 'Modinha', ->
 
 
-  {Model,instance,validation,data,mapping,projection} = {}
+  {Model,InheritsFromModel,instance,validation,data,mapping,projection} = {}
 
 
   before ->
@@ -48,6 +48,18 @@ describe 'Modinha', ->
       'q'   : 'n'
       's.t' : 'm.s.t'
 
+
+    InheritsFromModel = Model.inherit({
+      b: 'bb'
+      c: 'c'
+    }, {
+      b: 'bb'
+      c: 'c'
+      schema: {
+        q: { default: 'q'}
+        r: { default: false }
+      }
+    })
 
 
 
@@ -94,14 +106,8 @@ describe 'Modinha', ->
     it 'should set new prototype properties on the subclass', ->
       instance.a.should.equal 'a'
 
-    it 'should override prototype properties on the subclass', ->
-      instance.b.should.equal 'b'
-
     it 'should set new static properties on the subclass', ->
       Model.a.should.equal 'a'
-
-    it 'should override static properties on the subclass', ->
-      Model.b.should.equal 'b'
 
     it 'should set the prototype\'s constructor', ->
       Model.prototype.constructor.should.equal Model
@@ -109,7 +115,14 @@ describe 'Modinha', ->
     it 'should set the superclass\' prototype', ->
       Model.superclass.should.equal Modinha.prototype
 
+    it 'should override static properties on the subclass', ->
+      InheritsFromModel.schema.r.default.should.equal false
 
+    it 'should override prototype properties on the subclass', ->
+      new InheritsFromModel().b.should.equal 'bb'
+
+    it 'should not mutate the superclass', ->
+      Model.schema.r.default.should.equal true
 
 
   describe 'model extension', ->
