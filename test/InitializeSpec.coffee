@@ -130,6 +130,92 @@ describe 'assign', ->
     assign('after', descriptors.after, source, target, options)
     target.setAfter.should.equal 'after assignment'
 
+  describe 'trim property', ->
+
+    describe 'with strings', ->
+
+      dsc =
+        trimBothSides:
+          type: 'string'
+          trim: true
+        trimLeading:
+          type: 'string'
+          trim:
+            leading: true
+        trimTrailing:
+          type: 'string'
+          trim:
+            trailing: true
+        noTrim:
+          type: 'string'
+
+      src =
+        trimBothSides: ' test '
+        trimLeading: ' test '
+        trimTrailing: ' test '
+        noTrim: ' test '
+
+      tgt = {}
+
+      it 'should trim both leading and trailing whitespace', ->
+        assign('trimBothSides', dsc.trimBothSides, src, tgt, {})
+        expect(tgt.trimBothSides).to.equal 'test'
+
+      it 'should trim leading whitespace alone', ->
+        assign('trimLeading', dsc.trimLeading, src, tgt, {})
+        expect(tgt.trimLeading).to.equal 'test '
+
+      it 'should trim trailing whitespace alone', ->
+        assign('trimTrailing', dsc.trimTrailing, src, tgt, {})
+        expect(tgt.trimTrailing).to.equal ' test'
+
+      it 'should not trim whitespace if not requested', ->
+        assign('noTrim', dsc.noTrim, src, tgt, {})
+        expect(tgt.noTrim).to.equal ' test '
+
+
+    describe 'arrays', ->
+
+      dsc =
+        trimBothSides:
+          type: 'array'
+          trim: true
+        trimLeading:
+          type: 'array'
+          trim:
+            leading: true
+        trimTrailing:
+          type: 'array'
+          trim:
+            trailing: true
+        noTrim:
+          type: 'array'
+
+      src =
+        trimBothSides: [ ' test0 ', ' test1 ' ]
+        trimLeading: [ ' test0 ', ' test1 ' ]
+        trimTrailing: [ ' test0 ', ' test1 ' ]
+        noTrim: [ ' test0 ', ' test1 ' ]
+
+      tgt = {}
+
+      it 'should trim both leading and trailing whitespace', ->
+        assign('trimBothSides', dsc.trimBothSides, src, tgt, {})
+        expect(tgt.trimBothSides).to.eql [ 'test0', 'test1' ]
+
+      it 'should trim leading whitespace alone', ->
+        assign('trimLeading', dsc.trimLeading, src, tgt, {})
+        expect(tgt.trimLeading).to.eql [ 'test0 ', 'test1 ' ]
+
+      it 'should trim trailing whitespace alone', ->
+        assign('trimTrailing', dsc.trimTrailing, src, tgt, {})
+        expect(tgt.trimTrailing).to.eql [ ' test0', ' test1' ]
+
+      it 'should not trim whitespace if not requested', ->
+        assign('noTrim', dsc.noTrim, src, tgt, {})
+        expect(tgt.noTrim).to.eql [ ' test0 ', ' test1 ' ]
+
+
 
 
 describe 'map', ->
