@@ -19,44 +19,58 @@ Modinha is a toolkit for creating persisted models. This is for programmers who 
 
 #### Install
 
-    $ npm install modinha
+```bash
+$ npm install modinha
+```
 
 
 #### Require
 
-    var Modinha = require('modinha');
+```javascript
+var Modinha = require('modinha');
+```
 
 
 #### Define a model based on a schema
 
-    var Account = Modinha.define({
-      _id:      { type: 'string', default: Modinha.default.uuid },
-      name:     { type: 'string' },
-      email:    { type: 'string', required: true, format: 'email' },
-      hash:     { type: 'string', required: true, private: true },
-      created:  { type: 'string', default: Modinha.default.timestamp, format: 'utc-millisec' }
-    });
+```javascript
+var Account = Modinha.define({
+    _id:      { type: 'string', default: Modinha.default.uuid },
+    name:     { type: 'string' },
+    email:    { type: 'string', required: true, format: 'email' },
+    hash:     { type: 'string', required: true, private: true },
+    created:  { type: 'string', default: Modinha.default.timestamp, format: 'utc-millisec' }
+});
+```
 
 `Modinha.define()` optionally takes a collection name as the first argument and will assign the value of that argument to the new model's static `collection` property.
 
-    Modinha.define('accounts', schema);
+```javascript
+Modinha.define('accounts', schema);
+```
 
 
 #### Create an instance
 
-    var account = new Account({ email: 'john@smith.com' }, options);
+```javascript
+var account = new Account({ email: 'john@smith.com' }, options);
+```
 
 
 #### Validation
 
 Validate an uninitialized object against the model's schema.
 
-    Account.validate({...})
+```javascript
+Account.validate({...})
+```
 
 Validate an instance.
 
-    var account = new Account({...})
-      , validation = account.validate()
+```javascript
+var account = new Account({...})
+    , validation = account.validate()
+```
 
 
 #### Initializing Objects
@@ -65,34 +79,48 @@ Like the constructor, a model's static initialize method takes data and options 
 
 With a null or undefined data argument, initialize will return an instance of the model with default values.
 
-    Account.initialize()
+```javascript
+Account.initialize()
+```
 
 For cases where this is undesirable, such as initializing database results, use the nullify option
 
-    Account.initialize(undefined, { nullify: true })
+```javascript
+Account.initialize(undefined, { nullify: true })
+```
 
 Like the constructor, initialize will set any properties you provide that are defined in the schema.
 
-    Account.initialize({ email: 'john@example.com' })
+```javascript
+Account.initialize({ email: 'john@example.com' })
+```
 
 Default values will not be set if values for the property are provided.
 
-    Account.initialize({ _id: '...', email: 'john@example.com' })
+```javascript
+Account.initialize({ _id: '...', email: 'john@example.com' })
+```
 
 Properties not defined in the schema are ignored.
 
-    Account.initialize({ hacker: 'p0wn3d' })
+```javascript
+Account.initialize({ hacker: 'p0wn3d' })
+```
 
 Private schema properties are also ignored by default. This is to prevent accidental disclosure of sensitive values, such as hashed passwords. To include private values in an instance, set the private option to true.
 
-    Account.initialize({ hash: 'secret', ... }, { private: true })
+```javascript
+Account.initialize({ hash: 'secret', ... }, { private: true })
+```
 
 Unlike the constructor, the static initialize method can also instantiate multiple objects in one call, parse json, and any combination of the two.
 
-    Account.initialize([{...},{...},{...}])
-    Account.initialize('{ "json": true }')
-    Account.initialize('[{},{},{}]')
-    Account.initialize(['{}', '{}'])
+```javascript
+Account.initialize([{...},{...},{...}])
+Account.initialize('{ "json": true }')
+Account.initialize('[{},{},{}]')
+Account.initialize(['{}', '{}'])
+```
 
 #### Collections
 
@@ -102,28 +130,32 @@ functionality that will apply across all the items in the collection.
 
 For example,
 
-    Account.initialize([{...},{...},{...}])
+```javascript
+Account.initialize([{...},{...},{...}])
+```
 
 will return a ModelCollection with three Account instances.
 
 Currently, the ModelCollection object only supports the `project` function,
 which can be used like so:
 
-    var accounts = Account.initialize([
-      { email: 'jane.doe@example.com' },
-      { email: 'ham.sandwich@example.com' },
-      { email: 'rosewater@example.com' }
-    ]);
+```javascript
+var accounts = Account.initialize([
+    { email: 'jane.doe@example.com' },
+    { email: 'ham.sandwich@example.com' },
+    { email: 'rosewater@example.com' }
+]);
 
-    var projections = accounts.project({
-      email: 'email_address'
-    });
+var projections = accounts.project({
+    email: 'email_address'
+});
 
-    // projections = [
-    //   { email_address: 'jane.doe@example.com' },
-    //   { email_address: 'ham.sandwich@example.com' },
-    //   { email_address: 'rosewater@example.com' }
-    // ]
+// projections = [
+//   { email_address: 'jane.doe@example.com' },
+//   { email_address: 'ham.sandwich@example.com' },
+//   { email_address: 'rosewater@example.com' }
+// ]
+```
 
 
 
@@ -131,61 +163,77 @@ which can be used like so:
 
 Pass a mapping in the options.
 
-    Account.initialize({ facebook: { bs: {}, id: '...' } }, { map: { '_id': 'facebook.id' } })
+```javascript
+Account.initialize({ facebook: { bs: {}, id: '...' } }, { map: { '_id': 'facebook.id' } })
+```
 
 Or predefine named mappings:
 
-    Account.maps.facebook = {
-      '_id': 'facebook.id'
-    };
+```javascript
+Account.maps.facebook = {
+    '_id': 'facebook.id'
+};
+```
 
-    Account.initialize(fbData, { map: 'facebook' });
+```javascript
+Account.initialize(fbData, { map: 'facebook' });
+```
 
 
 #### Selections
 
 Get a subset of an object.
 
-    Account.initialize({...}, { select: ['name', 'email'] });
+```javascript
+Account.initialize({...}, { select: ['name', 'email'] });
+```
 
 
 #### Merging objects
 
 Merge works identical to initialize, except that it mutates an existing instance instead of creating a new one.
 
-    var account = new Account({...});
-    account.merge(data, { map: 'facebook' });
+```javascript
+var account = new Account({...});
+account.merge(data, { map: 'facebook' });
+```
 
 If you would like to delete a property off of an object, then set the `$unset` operator on the options object to an array with the list of property names you would like to delete. For example,
 
-    var account = new Account({ ssn: '123-456-7890' });
-    account.merge({}, { $unset: [ 'ssn' ] });
+```javascript
+var account = new Account({ ssn: '123-456-7890' });
+account.merge({}, { $unset: [ 'ssn' ] });
+```
 
 
 #### Serialization and deserialization
 
 By default, Modinha models serialize and deserialize JSON. These methods can be overridden to store data in a different format. For example, we might want to use [MessagePack](http://msgpack.org/) or [CSV](https://tools.ietf.org/html/rfc4180), or perhaps compress the data with [snappy](https://code.google.com/p/snappy/).
 
-      Account.serialize = function (object) {
-        return msgpack.pack(object);
-      };
+```javascript
+Account.serialize = function (object) {
+return msgpack.pack(object);
+};
 
-      Account.deserialize = function (data) {
-        return msgpack.unpack(data);
-      };
+Account.deserialize = function (data) {
+return msgpack.unpack(data);
+};
+```
 
 
 #### Augment the model
 
 This model can be easily augmented with static and prototype methods.
 
-    Account.create = function (data, options, callback) {
-      // ...
-    };
+```javascript
+Account.create = function (data, options, callback) {
+    // ...
+};
 
-    Account.prototype.save = function (data, options, callback) {
-      // ...
-    };
+Account.prototype.save = function (data, options, callback) {
+    // ...
+};
+```
 
 When a model requires many methods that are general and identical to other models, duplication can be avoided by extending the model with mixins.
 
@@ -194,13 +242,17 @@ When a model requires many methods that are general and identical to other model
 
 Pass in a "class" (constructor) or explicit prototype and static augmentations.
 
-    Model.extend(SomethingToMixin)
-    Model.extend(proto, static);
+```javascript
+Model.extend(SomethingToMixin)
+Model.extend(proto, static);
+```
 
 
 #### Inherit from a model
 
-    var Admin = Account.inherit(proto, static);
+```javascript
+var Admin = Account.inherit(proto, static);
+```
 
 
 
