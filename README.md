@@ -162,6 +162,72 @@ If you would like to delete a property off of an object, then set the `$unset` o
     account.merge({}, { $unset: [ 'ssn' ] });
 
 
+#### Trimming strings and arrays of strings
+
+Modinha supports automatically trimming strings or arrays of strings as the data is initialized. This feature is configured on the schema using the `trim` property:
+
+    var Account = Modinha.define({
+      name: {
+        type: 'string',
+        trim: true
+      },
+      contributions: {
+        type: 'array',
+        trim: true
+      }
+    })
+
+    var account = new Account({
+      name: '  Stephen Hawking  ',
+      contributions: [
+        'theories  ',
+        '  understanding the fabric of the universe',
+        ' ice bucket challenge survivor '
+      ]
+    })
+
+    // account.name = 'Stephen Hawking'
+    // account.contributions = [
+    //   'theories',
+    //   'understanding the fabric of the universe',
+    //   'ice bucket challenge survivor'
+    // ]
+
+String trimming can also be limited to only the leading or trailing whitespace by setting `trim` to an object with the `leading` and `trailing` boolean properties:
+
+    var Account = Modinha.define({
+      name: {
+        type: 'string',
+        trim: {
+          leading: true
+        }
+      },
+      contributions: {
+        type: 'array',
+        trim: {
+          trailing: true
+        }
+      }
+    })
+
+    var account = new Account({
+      name: '  Alan Turing  ',
+      contributions: [
+        'cracking the enigma code  ',
+        '  theory of computation',
+        ' the turing test '
+      ]
+    })
+
+    // account.name = 'Alan Turing  '
+    // account.contributions = [
+    //   'cracking the enigma code',
+    //   '  theory of computation',
+    //   ' the turing test'
+    // ]
+
+
+
 #### Serialization and deserialization
 
 By default, Modinha models serialize and deserialize JSON. These methods can be overridden to store data in a different format. For example, we might want to use [MessagePack](http://msgpack.org/) or [CSV](https://tools.ietf.org/html/rfc4180), or perhaps compress the data with [snappy](https://code.google.com/p/snappy/).
