@@ -35,25 +35,25 @@ var Modinha = require('modinha');
 
 ```javascript
 var Account = Modinha.define({
-    _id:      { type: 'string', default: Modinha.default.uuid },
-    name:     { type: 'string' },
-    email:    { type: 'string', required: true, format: 'email' },
-    hash:     { type: 'string', required: true, private: true },
-    created:  { type: 'string', default: Modinha.default.timestamp, format: 'utc-millisec' }
-});
+  _id: { type: 'string', default: Modinha.default.uuid },
+  name: { type: 'string' },
+  email: { type: 'string', required: true, format: 'email' },
+  hash: { type: 'string', required: true, private: true },
+  created: { type: 'string', default: Modinha.default.timestamp, format: 'utc-millisec' }
+})
 ```
 
 `Modinha.define()` optionally takes a collection name as the first argument and will assign the value of that argument to the new model's static `collection` property.
 
 ```javascript
-Modinha.define('accounts', schema);
+Modinha.define('accounts', schema)
 ```
 
 
 #### Create an instance
 
 ```javascript
-var account = new Account({ email: 'john@smith.com' }, options);
+var account = new Account({ email: 'john@smith.com' }, options)
 ```
 
 
@@ -69,7 +69,7 @@ Validate an instance.
 
 ```javascript
 var account = new Account({...})
-    , validation = account.validate()
+var validation = account.validate()
 ```
 
 
@@ -141,14 +141,14 @@ which can be used like so:
 
 ```javascript
 var accounts = Account.initialize([
-    { email: 'jane.doe@example.com' },
-    { email: 'ham.sandwich@example.com' },
-    { email: 'rosewater@example.com' }
-]);
+  { email: 'jane.doe@example.com' },
+  { email: 'ham.sandwich@example.com' },
+  { email: 'rosewater@example.com' }
+])
 
 var projections = accounts.project({
-    email: 'email_address'
-});
+  email: 'email_address'
+})
 
 // projections = [
 //   { email_address: 'jane.doe@example.com' },
@@ -171,12 +171,12 @@ Or predefine named mappings:
 
 ```javascript
 Account.maps.facebook = {
-    '_id': 'facebook.id'
-};
+  '_id': 'facebook.id'
+}
 ```
 
 ```javascript
-Account.initialize(fbData, { map: 'facebook' });
+Account.initialize(fbData, { map: 'facebook' })
 ```
 
 
@@ -185,7 +185,7 @@ Account.initialize(fbData, { map: 'facebook' });
 Get a subset of an object.
 
 ```javascript
-Account.initialize({...}, { select: ['name', 'email'] });
+Account.initialize({...}, { select: ['name', 'email'] })
 ```
 
 
@@ -194,15 +194,15 @@ Account.initialize({...}, { select: ['name', 'email'] });
 Merge works identical to initialize, except that it mutates an existing instance instead of creating a new one.
 
 ```javascript
-var account = new Account({...});
-account.merge(data, { map: 'facebook' });
+var account = new Account({...})
+account.merge(data, { map: 'facebook' })
 ```
 
 If you would like to delete a property off of an object, then set the `$unset` operator on the options object to an array with the list of property names you would like to delete. For example,
 
 ```javascript
-var account = new Account({ ssn: '123-456-7890' });
-account.merge({}, { $unset: [ 'ssn' ] });
+var account = new Account({ ssn: '123-456-7890' })
+account.merge({}, { $unset: [ 'ssn' ] })
 ```
 
 
@@ -212,23 +212,23 @@ Modinha supports automatically trimming strings or arrays of strings as the data
 
 ```javascript
 var Account = Modinha.define({
-    name: {
+  name: {
     type: 'string',
     trim: true
-    },
-    contributions: {
+  },
+  contributions: {
     type: 'array',
     trim: true
-    }
+  }
 })
 
 var account = new Account({
-    name: '  Stephen Hawking  ',
-    contributions: [
+  name: '  Stephen Hawking  ',
+  contributions: [
     'theories  ',
     '  understanding the fabric of the universe',
     ' ice bucket challenge survivor '
-    ]
+  ]
 })
 
 // account.name = 'Stephen Hawking'
@@ -243,27 +243,27 @@ String trimming can also be limited to only the leading or trailing whitespace b
 
 ```javascript
 var Account = Modinha.define({
-    name: {
+  name: {
     type: 'string',
     trim: {
-        leading: true
+      leading: true
     }
-    },
-    contributions: {
+  },
+  contributions: {
     type: 'array',
     trim: {
-        trailing: true
+      trailing: true
     }
-    }
+  }
 })
 
 var account = new Account({
-    name: '  Alan Turing  ',
-    contributions: [
+  name: '  Alan Turing  ',
+  contributions: [
     'cracking the enigma code  ',
     '  theory of computation',
     ' the turing test '
-    ]
+  ]
 })
 
 // account.name = 'Alan Turing  '
@@ -282,12 +282,12 @@ By default, Modinha models serialize and deserialize JSON. These methods can be 
 
 ```javascript
 Account.serialize = function (object) {
-return msgpack.pack(object);
-};
+  return msgpack.pack(object);
+}
 
 Account.deserialize = function (data) {
-return msgpack.unpack(data);
-};
+  return msgpack.unpack(data);
+}
 ```
 
 
@@ -297,12 +297,12 @@ This model can be easily augmented with static and prototype methods.
 
 ```javascript
 Account.create = function (data, options, callback) {
-    // ...
-};
+  // ...
+}
 
 Account.prototype.save = function (data, options, callback) {
-    // ...
-};
+  // ...
+}
 ```
 
 When a model requires many methods that are general and identical to other models, duplication can be avoided by extending the model with mixins.
@@ -314,14 +314,14 @@ Pass in a "class" (constructor) or explicit prototype and static augmentations.
 
 ```javascript
 Model.extend(SomethingToMixin)
-Model.extend(proto, static);
+Model.extend(proto, static)
 ```
 
 
 #### Inherit from a model
 
 ```javascript
-var Admin = Account.inherit(proto, static);
+var Admin = Account.inherit(proto, static)
 ```
 
 
