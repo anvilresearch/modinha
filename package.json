@@ -19,7 +19,9 @@
     "url": "https://github.com/anvilresearch/modinha.git"
   },
   "scripts": {
-    "test": "standard && grunt test"
+    "test": "mocha test && standard",
+    "lint": "standard",
+    "test-watch": "mocha test --watch"
   },
   "main": "./lib/Modinha.js",
   "license": "MIT",
@@ -27,9 +29,8 @@
     "chai": "^3.1.0",
     "coffee-script": "^1.9.3",
     "grunt": "~0.4.1",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-mocha-cov": "^0.4.0",
     "grunt-release": "^0.13.0",
+    "mocha": "^2.3.3",
     "sinon": "^1.15.4",
     "sinon-chai": "^2.8.0",
     "standard": "^5.1.0"
