@@ -64,6 +64,7 @@ describe 'assign', ->
   beforeEach ->
     descriptors =
       simple:    { type: 'string' }
+      empty:     { type: 'string' }
       private:   { type: 'string', private: true }
       deleted:   { type: 'string' }
       exists:    { type: 'string' }
@@ -74,6 +75,7 @@ describe 'assign', ->
       after:     { type: 'string', after: (data) -> @setAfter = "#{data.after} assignment"}
     source =
       simple: 'simple'
+      empty: ''
       deleted: 'boogers'
       private: 'private'
       immutable: 'immutable'
@@ -87,6 +89,10 @@ describe 'assign', ->
   it 'should set a property on target from source', ->
     assign('simple', descriptors.simple, source, target, options)
     target.simple.should.equal 'simple'
+
+  it 'should set an empty string on a target from source', ->
+    assign('empty', descriptors.empty, source, target, options)
+    target.empty.should.equal ''
 
   it 'should remove target properties marked for deletion with $unset', ->
     assign('deleted', descriptors.deleted, source, target, options)
@@ -280,6 +286,9 @@ describe 'getDeepProperty', ->
   it 'should read a value from nested source objects via chain', ->
     getDeepProperty({ a: { b: { c: 'c' } } }, ['a', 'b', 'c']).should.equal 'c'
 
+  it 'should read an empty string', ->
+    getDeepProperty({ a: { b: { c: '' } } }, ['a', 'b', 'c']).should.equal ''
+
 
 describe 'setDeepProperty', ->
 
@@ -288,7 +297,15 @@ describe 'setDeepProperty', ->
     setDeepProperty(target, ['a', 'c'], 'c')
     target.a.c.should.equal 'c'
 
+  it 'should ignore undefined values', ->
+    target = { a: 'a', b: 'b' }
+    setDeepProperty(target, ['a'], undefined)
+    target.a.should.equal 'a'
 
+  it 'should set empty strings', ->
+    target = { a: 'a' }
+    setDeepProperty(target, ['a'], '')
+    target.a.should.equal ''
 
 
 
