@@ -3,9 +3,8 @@ sudo: false
 language: node_js
 
 node_js:
-  - "4.0"
-  - "iojs"
-  - "0.12"
+  - "6.0"
+  - "8.0"
 
 before_install:
   - npm install -g npm
