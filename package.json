@@ -25,6 +25,9 @@
   },
   "main": "./lib/Modinha.js",
   "license": "MIT",
+  "engines": {
+    "node": ">=6.11.2"
+  },
   "devDependencies": {
     "chai": "^4.1.1",
     "coffee-script": "^1.12.7",
