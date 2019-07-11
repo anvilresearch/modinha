@@ -1,22 +1,10 @@
 {
-  "name": "modinha",
+  "name": "camfou-modinha",
   "description": "Modinha is a toolkit for creating persisted models in Nodejs.",
-  "author": {
-    "name": "Christian Smith",
-    "email": "smith@anvil.io",
-    "url": "http://anvil.io"
-  },
-  "contributors": [
-    {
-      "name": "Vartan Simonian",
-      "email": "vsimonianpress@gmail.com",
-      "url": "http://vsimonian.github.io/"
-    }
-  ],
-  "version": "0.1.0",
+  "version": "0.2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/anvilresearch/modinha.git"
+    "url": "https://github.com/camfou/modinha.git"
   },
   "scripts": {
     "test": "mocha test && eslint . && echo Code looks good!",
@@ -26,7 +14,7 @@
   "main": "./lib/Modinha.js",
   "license": "MIT",
   "engines": {
-    "node": ">=6.11.2"
+    "node": ">=10"
   },
   "devDependencies": {
     "chai": "^4.2.0",
@@ -50,8 +38,5 @@
     "underscore": "^1.9.1",
     "underscore-deep-extend": "1.1.5",
     "uuid": "^3.3.2"
-  },
-  "bugs": {
-    "url": "https://github.com/anvilresearch/modinha/issues"
   }
 }

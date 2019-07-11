@@ -1,5 +1,5 @@
 # Modinha
-[![Build Status](https://travis-ci.org/anvilresearch/modinha.svg?branch=master)](https://travis-ci.org/anvilresearch/modinha)
+[![Build Status](https://travis-ci.org/camfou/modinha.svg?branch=master)](https://travis-ci.org/camfou/modinha)
 
 Modinha is a toolkit for creating persisted models. This is for programmers who like to work from the bottom up, building up persistence code from low level drivers, such as node_redis. Modinha provides:
 
